@@ -4,7 +4,6 @@ subtitle: |
   | Final Project 
   | Data Science 1 with R (STAT 301-1)
 author: "Nikole Montero Cervantes"
-date: today
 
 format:
   html:
