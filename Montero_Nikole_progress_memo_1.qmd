@@ -31,17 +31,23 @@ GitHub (free account) cannot store large files. If you try to commit and push a 
 **We may need to do that for files in your final project!**
 :::
 
-## Data source
+## Loading data
 
 ```{r}
 tripadvisor_restaurants_europe <- read.csv("data/tripadvisor_restaurants.csv")
 ```
 
-Blah blah blah^[where blah blah came from, an example of footnote]
+## Data source
+
+This dataset was acquired through scraping TripAdvisor (TA), a well-known travel website, for its restaurant information. Raw data was collected utilizing a Python script that collected information from TripAdvisor restaurant listing pages through the pandas and BeautifulSoup libraries. The raw datasets for Europe's largest cities were then carefully selected and combined for further examination.
+
+It is important to note that this dataset comprises only those restaurants registered in the TripAdvisor database. Thus, it might not encompass all the restaurants within a city because the dataset relies solely on the TripAdvisor database.
+
+This dataset was sourced from Damien Beneschi on Kaggle, a platform dedicated to data science.
 
 ## Why this data
 
-Blah blah blah^[another footnote]
+Having travelled to Eroupe before, I have been fascinated for its culture, but mainly their cuisine. I have tried many resutarintst in Europe usually following the recommendations and reviews from TripAdvisor. Thus, I wanted to do some deeper research on that how those all different variables come to play and which are the best resutauratn or the most affordible one for people that loves backapacking, but still get a quality dish. 
 
 ## Data quality & complexity check
 
