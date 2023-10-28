@@ -16,16 +16,7 @@ execute:
 
 from: markdown+emoji 
 ---
-
-::: {.callout-important}
-## Memo format
-
-Like all other submissions for this course, we expect the memo to be neat and well organized.
-
-You should make this document your own. This is a template. To help with this we have added a date to the yaml above (good whenever writing memos). You should remove this block when making this document your own.
-
-:::
-
+  
 ::: {.callout-tip icon=false}
 
 ## Github Repo Link
@@ -41,6 +32,10 @@ GitHub (free account) cannot store large files. If you try to commit and push a 
 :::
 
 ## Data source
+
+```{r}
+tripadvisor_restaurants_europe <- read.csv("data/tripadvisor_restaurants.csv")
+```
 
 Blah blah blah^[where blah blah came from, an example of footnote]
 
