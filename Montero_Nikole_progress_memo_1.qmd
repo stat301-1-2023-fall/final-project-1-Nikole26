@@ -34,6 +34,7 @@ GitHub (free account) cannot store large files. If you try to commit and push a 
 ## Loading data
 
 ```{r}
+library(tidyverse)
 tripadvisor_restaurants_europe <- read.csv("data/tripadvisor_restaurants.csv")
 ```
 
@@ -51,12 +52,20 @@ Having travelled to Eroupe before, I have been fascinated for its culture, but m
 
 ## Data quality & complexity check
 
-Blah blah blah
+data quality observations:
+- rename the price range is important to make it more understandble
+- organizing the cuisine style coulumn is important since there are too many valuesper restaurant. Skimming throguh the data it seems neccesary creating maybe a nyew varibale concerning dietary restrictions. And limitating to cusine style to three options regarding the nationaloty of food they provide to make it more readable and easy to anaylise. 
+- Another complet
+
 
 ## Potential data issues
 
-Blah blah blah
+The main potential issue 
+- There is some missing values for some restauratns. 
+- Some rows have empty valus, such as NA is not recognized but either it is just left in blank, so it's important to clean the data. 
+
+
 
 ## Misc
 
-Blah Blah
+
