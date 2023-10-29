@@ -32,11 +32,17 @@ GitHub (free account) cannot store large files. If you try to commit and push a 
 :::
 
 ## Loading data
+```{r}
+library(skimr)
+```
+
 
 ```{r}
 library(tidyverse)
-tripadvisor_restaurants_europe <- read.csv("data/tripadvisor_restaurants.csv")
+
+tripadvisor_european_restaurants <- read_csv("data/tripadvisor_european_restaurants.csv")
 ```
+
 
 ## Data source
 
@@ -68,4 +74,5 @@ The main potential issue
 
 ## Misc
 
-
+Mention in the memo that if the dataset is too large and difficult to work with, you will randomly select a smaller subset. **Verify with professor if this is ok**
+^ called Downsampling

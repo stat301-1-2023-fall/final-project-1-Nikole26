@@ -39,3 +39,4 @@
 # the following code in the Terminal:
 # find . -size +100M | sed 's|^\./||g' | cat >> .gitignore; awk '!NF || !seen[$0]++' .gitignore
 
+data/tripadvisor_european_restaurants.csv
