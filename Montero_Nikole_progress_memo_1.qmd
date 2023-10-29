@@ -51,6 +51,15 @@ This dataset is credited to Stefano Leone on Kaggle, a platform dedicated to dat
 
 Having travelled to Europe before, I have been fascinated for its culture, but mainly their cuisine. Throughout my journeys, I've explored numerous European restaurants, often relying on recommendations and reviews from platforms like TripAdvisor. Thus, I'm curious about the complex interactions between many elements that go into creating a truly exceptional dining experience. The problem of locating the best eateries that satisfy budget-conscious travelers without sacrificing excellent food quality really piqued my interest. I want to dive into the affordable restaurants with great food, making travel experiences better for people like me who love exploring food while traveling.
 
+## Skim and glimpse at the data
+
+```{r}
+#| echo: false
+skim_without_charts(tripadvisor_european_restaurants)
+glimpse(tripadvisor_european_restaurants)
+```
+
+
 ## Data quality & complexity check
 
 It is important to organize the price range and price level category by potentially mutating the values to enhance its clarity and user-friendliness. Simultaneously, organizing the cuisine style column is vital due to the excessive number of values associated with each restaurant. Reviewing the data, it becomes evident that creating a new variable related to dietary restrictions is necessary. This approach not only ensures a more organized dataset but also prevents the unnecessary proliferation of additional columns, streamlining the information and enhancing its overall efficiency.
