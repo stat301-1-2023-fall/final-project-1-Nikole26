@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
 width: 0.8em;
 margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
 }
+
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+}
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -2990,9 +3024,9 @@ vertical-align: -.125em;
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#loading-data" id="toc-loading-data" class="nav-link active" data-scroll-target="#loading-data">Loading data</a></li>
+  <li><a href="#loading-libraries-and-data" id="toc-loading-libraries-and-data" class="nav-link active" data-scroll-target="#loading-libraries-and-data">Loading libraries and data</a></li>
   <li><a href="#data-source" id="toc-data-source" class="nav-link" data-scroll-target="#data-source">Data source</a></li>
-  <li><a href="#why-this-data" id="toc-why-this-data" class="nav-link" data-scroll-target="#why-this-data">Why this data</a></li>
+  <li><a href="#why-this-data" id="toc-why-this-data" class="nav-link" data-scroll-target="#why-this-data">Why this data?</a></li>
   <li><a href="#data-quality-complexity-check" id="toc-data-quality-complexity-check" class="nav-link" data-scroll-target="#data-quality-complexity-check">Data quality &amp; complexity check</a></li>
   <li><a href="#potential-data-issues" id="toc-potential-data-issues" class="nav-link" data-scroll-target="#potential-data-issues">Potential data issues</a></li>
   <li><a href="#misc" id="toc-misc" class="nav-link" data-scroll-target="#misc">Misc</a></li>
@@ -3039,44 +3073,38 @@ Github Repo Link
 <p><a href="https://github.com/stat301-1-2023-fall/final-project-1-Nikole26.git">https://github.com/stat301-1-2023-fall/final-project-1-Nikole26.git</a></p>
 </div>
 </div>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<section id="loading-libraries-and-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-libraries-and-data">Loading libraries and data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading libraries </span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading data </span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>tripadvisor_european_restaurants <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/tripadvisor_european_restaurants.csv&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>GitHub (free account) cannot store large files. If you try to commit and push a large dataset you will have an ERROR! Any file over 100 MB (100,000 KB) needs to be added to the <code>.gitignore</code> file BEFORE committing.</p>
-<p><strong>We may need to do that for files in your final project!</strong></p>
-</div>
-</div>
-<section id="loading-data" class="level2">
-<h2 class="anchored" data-anchor-id="loading-data">Loading data</h2>
 </section>
 <section id="data-source" class="level2">
 <h2 class="anchored" data-anchor-id="data-source">Data source</h2>
-<p>This dataset was acquired through scraping TripAdvisor (TA), a well-known travel website, for its restaurant information. Raw data was collected utilizing a Python script that collected information from TripAdvisor restaurant listing pages through the pandas and BeautifulSoup libraries. The raw datasets for Europe’s largest cities were then carefully selected and combined for further examination.</p>
+<p>This dataset was acquired through scraping TripAdvisor (TA), a well-known travel website, for its restaurant information. The dataset contains a pool of 1,083,397 restaurants across European countries. The raw datasets for Europe’s largest cities were then carefully selected and combined for further examination.</p>
 <p>It is important to note that this dataset comprises only those restaurants registered in the TripAdvisor database. Thus, it might not encompass all the restaurants within a city because the dataset relies solely on the TripAdvisor database.</p>
-<p>This dataset was sourced from Damien Beneschi on Kaggle, a platform dedicated to data science.</p>
+<p>This dataset is credited to Stefano Leone on Kaggle, a platform dedicated to data science.</p>
 </section>
 <section id="why-this-data" class="level2">
-<h2 class="anchored" data-anchor-id="why-this-data">Why this data</h2>
-<p>Having travelled to Eroupe before, I have been fascinated for its culture, but mainly their cuisine. I have tried many resutarintst in Europe usually following the recommendations and reviews from TripAdvisor. Thus, I wanted to do some deeper research on that how those all different variables come to play and which are the best resutauratn or the most affordible one for people that loves backapacking, but still get a quality dish.</p>
+<h2 class="anchored" data-anchor-id="why-this-data">Why this data?</h2>
+<p>Having travelled to Europe before, I have been fascinated for its culture, but mainly their cuisine. Throughout my journeys, I’ve explored numerous European restaurants, often relying on recommendations and reviews from platforms like TripAdvisor. Thus, I’m curious about the complex interactions between many elements that go into creating a truly exceptional dining experience. The problem of locating the best eateries that satisfy budget-conscious travelers without sacrificing excellent food quality really piqued my interest. I want to dive into the affordable restaurants with great food, making travel experiences better for people like me who love exploring food while traveling.</p>
 </section>
 <section id="data-quality-complexity-check" class="level2">
 <h2 class="anchored" data-anchor-id="data-quality-complexity-check">Data quality &amp; complexity check</h2>
-<p>data quality observations: - rename the price range is important to make it more understandble - organizing the cuisine style coulumn is important since there are too many valuesper restaurant. Skimming throguh the data it seems neccesary creating maybe a nyew varibale concerning dietary restrictions. And limitating to cusine style to three options regarding the nationaloty of food they provide to make it more readable and easy to anaylise. - Another complet</p>
+<p>It is important to organize the price range and price level category by potentially mutating the values to enhance its clarity and user-friendliness. Simultaneously, organizing the cuisine style column is vital due to the excessive number of values associated with each restaurant. Reviewing the data, it becomes evident that creating a new variable related to dietary restrictions is necessary. This approach not only ensures a more organized dataset but also prevents the unnecessary proliferation of additional columns, streamlining the information and enhancing its overall efficiency.</p>
 </section>
 <section id="potential-data-issues" class="level2">
 <h2 class="anchored" data-anchor-id="potential-data-issues">Potential data issues</h2>
-<p>The main potential issue - There is some missing values for some restauratns. - Some rows have empty valus, such as NA is not recognized but either it is just left in blank, so it’s important to clean the data.</p>
+<p>The presence of missing values in various variables is the main potential issues for this data analysis. This issue can undermine the reliability of the results, leading to unaccurate interpretations. To address this problem, a systematic approach needs to be implemented. Firstly, identifying the variables with missing values and understanding the patterns behind these gaps is essential. Once the patterns are discerned, I will clean the data by getting rid of the rows with most of NA values. So, the missing data issue can be mitigated, ensuring a more comprehensive and reliable dataset for analysis and interpretation.</p>
 </section>
 <section id="misc" class="level2">
 <h2 class="anchored" data-anchor-id="misc">Misc</h2>
-<p>Mention in the memo that if the dataset is too large and difficult to work with, you will randomly select a smaller subset. <strong>Verify with professor if this is ok</strong> ^ called Downsampling</p>
+<p>Considering that this is a large data, if the dataset proves to be excessively large and challenging to work with, a viable solution is to randomly select a smaller subset, called downsampling. Downsampling involves randomly selecting a smaller subset from the extensive dataset, making it more manageable for analysis purposes. This strategic approach ensures that the analysis remains feasible and efficient, even when dealing with vast datasets.</p>
 </section>
 
 </main>

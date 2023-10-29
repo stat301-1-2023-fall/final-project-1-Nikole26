@@ -25,54 +25,41 @@ from: markdown+emoji
 
 :::
 
-::: {.callout-warning}
-GitHub (free account) cannot store large files. If you try to commit and push a large dataset you will have an ERROR! Any file over 100 MB (100,000 KB) needs to be added to the `.gitignore` file BEFORE committing.
 
-**We may need to do that for files in your final project!**
-:::
-
-## Loading data
-```{r}
-library(skimr)
-```
-
+## Loading libraries and data
 
 ```{r}
+#| echo: true
+# Loading libraries 
 library(tidyverse)
+library(skimr)
 
+# Loading data 
 tripadvisor_european_restaurants <- read_csv("data/tripadvisor_european_restaurants.csv")
 ```
 
 
 ## Data source
 
-This dataset was acquired through scraping TripAdvisor (TA), a well-known travel website, for its restaurant information. Raw data was collected utilizing a Python script that collected information from TripAdvisor restaurant listing pages through the pandas and BeautifulSoup libraries. The raw datasets for Europe's largest cities were then carefully selected and combined for further examination.
+This dataset was acquired through scraping TripAdvisor (TA), a well-known travel website, for its restaurant information. The dataset contains a pool of 1,083,397 restaurants across European countries. The raw datasets for Europe's largest cities were then carefully selected and combined for further examination.
 
 It is important to note that this dataset comprises only those restaurants registered in the TripAdvisor database. Thus, it might not encompass all the restaurants within a city because the dataset relies solely on the TripAdvisor database.
 
-This dataset was sourced from Damien Beneschi on Kaggle, a platform dedicated to data science.
+This dataset is credited to Stefano Leone on Kaggle, a platform dedicated to data science.
 
-## Why this data
+## Why this data?
 
-Having travelled to Eroupe before, I have been fascinated for its culture, but mainly their cuisine. I have tried many resutarintst in Europe usually following the recommendations and reviews from TripAdvisor. Thus, I wanted to do some deeper research on that how those all different variables come to play and which are the best resutauratn or the most affordible one for people that loves backapacking, but still get a quality dish. 
+Having travelled to Europe before, I have been fascinated for its culture, but mainly their cuisine. Throughout my journeys, I've explored numerous European restaurants, often relying on recommendations and reviews from platforms like TripAdvisor. Thus, I'm curious about the complex interactions between many elements that go into creating a truly exceptional dining experience. The problem of locating the best eateries that satisfy budget-conscious travelers without sacrificing excellent food quality really piqued my interest. I want to dive into the affordable restaurants with great food, making travel experiences better for people like me who love exploring food while traveling.
 
 ## Data quality & complexity check
 
-data quality observations:
-- rename the price range is important to make it more understandble
-- organizing the cuisine style coulumn is important since there are too many valuesper restaurant. Skimming throguh the data it seems neccesary creating maybe a nyew varibale concerning dietary restrictions. And limitating to cusine style to three options regarding the nationaloty of food they provide to make it more readable and easy to anaylise. 
-- Another complet
-
+It is important to organize the price range and price level category by potentially mutating the values to enhance its clarity and user-friendliness. Simultaneously, organizing the cuisine style column is vital due to the excessive number of values associated with each restaurant. Reviewing the data, it becomes evident that creating a new variable related to dietary restrictions is necessary. This approach not only ensures a more organized dataset but also prevents the unnecessary proliferation of additional columns, streamlining the information and enhancing its overall efficiency.
 
 ## Potential data issues
 
-The main potential issue 
-- There is some missing values for some restauratns. 
-- Some rows have empty valus, such as NA is not recognized but either it is just left in blank, so it's important to clean the data. 
-
+The presence of missing values in various variables is the main potential issues for this data analysis. This issue can undermine the reliability of the results, leading to unaccurate interpretations. To address this problem, a systematic approach needs to be implemented. Firstly, identifying the variables with missing values and understanding the patterns behind these gaps is essential. Once the patterns are discerned, I will clean the data by getting rid of the rows with most of NA values. So, the missing data issue can be mitigated, ensuring a more comprehensive and reliable dataset for analysis and interpretation.
 
 
 ## Misc
 
-Mention in the memo that if the dataset is too large and difficult to work with, you will randomly select a smaller subset. **Verify with professor if this is ok**
-^ called Downsampling
+Considering that this is a large data, if the dataset proves to be excessively large and challenging to work with, a viable solution is to randomly select a smaller subset, called downsampling. Downsampling involves randomly selecting a smaller subset from the extensive dataset, making it more manageable for analysis purposes. This strategic approach ensures that the analysis remains feasible and efficient, even when dealing with vast datasets. 
