@@ -62,7 +62,7 @@ glimpse(tripadvisor_european_restaurants)
 
 ## Data quality & complexity check
 
-This dataset contains 1,083,397 observations and 42 variables. Among these variables, 25 are categorical (character) and 17 are numericals. 
+This dataset contains 1,083,397 observations and 42 variables. Among these variables, 25 are categorical and 17 are numericals. 
 
 It is important to organize the price range and price level category by potentially mutating the values to enhance its clarity and user-friendliness. Simultaneously, organizing the cuisine style column is vital due to the excessive number of values associated with each restaurant. Reviewing the data, it becomes evident that creating a new variable related to dietary restrictions is necessary. This approach not only ensures a more organized dataset but also prevents the unnecessary proliferation of additional columns, streamlining the information and enhancing its overall efficiency.
 
