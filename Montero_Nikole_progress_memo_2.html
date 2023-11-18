@@ -8,7 +8,7 @@
 
 <meta name="author" content="Nikole Montero Cervantes">
 
-<title>Progress Memo 1</title>
+<title>Progress Memo 2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -3025,6 +3025,7 @@ vertical-align: -.125em;
    
   <ul>
   <li><a href="#data-management" id="toc-data-management" class="nav-link active" data-scroll-target="#data-management">Data management</a></li>
+  <li><a href="#cleaning-missingness" id="toc-cleaning-missingness" class="nav-link" data-scroll-target="#cleaning-missingness">Cleaning missingness</a></li>
   </ul>
 </nav>
 </div>
@@ -3032,7 +3033,7 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Progress Memo 1</h1>
+<h1 class="title">Progress Memo 2</h1>
 <p class="subtitle lead"></p><p>Final Project<br>
 Data Science 1 with R (STAT 301-1)</p><p></p>
 </div>
@@ -3072,9 +3073,8 @@ Github Repo Link
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading libraries </span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading data </span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>tripadvisor_european_restaurants <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/tripadvisor_european_restaurants.csv&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="data-management" class="level1">
 <h1>Data management</h1>
@@ -3085,7 +3085,7 @@ Github Repo Link
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Name</td>
-<td style="text-align: left;">tripadvisor_european_rest…</td>
+<td style="text-align: left;">european_restaurants</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Number of rows</td>
@@ -3633,6 +3633,91 @@ Github Repo Link
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 42
+  restaurant_link     restaurant_name  original_location country region province
+  &lt;chr&gt;               &lt;chr&gt;            &lt;chr&gt;             &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;   
+1 g10001637-d10002227 Le 147           &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Haute-V…
+2 g10001637-d14975787 Le Saint Jouvent &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Haute-V…
+3 g10002858-d4586832  Au Bout du Pont  &quot;[\&quot;Europe\&quot;, \&quot;… France  Centr… Berry   
+4 g10002986-d3510044  Le Relais de Na… &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Correze 
+5 g10022428-d9767191  Relais Du MontS… &quot;[\&quot;Europe\&quot;, \&quot;… France  Occit… Aveyron 
+6 g10029260-d6605477  L&#39;Auberge Du Vi… &quot;[\&quot;Europe\&quot;, \&quot;… France  Auver… Loire   
+# ℹ 36 more variables: city &lt;chr&gt;, address &lt;chr&gt;, latitude &lt;dbl&gt;,
+#   longitude &lt;dbl&gt;, claimed &lt;chr&gt;, awards &lt;chr&gt;, popularity_detailed &lt;chr&gt;,
+#   popularity_generic &lt;chr&gt;, top_tags &lt;chr&gt;, price_level &lt;chr&gt;,
+#   price_range &lt;chr&gt;, meals &lt;chr&gt;, cuisines &lt;chr&gt;, special_diets &lt;chr&gt;,
+#   features &lt;chr&gt;, vegetarian_friendly &lt;chr&gt;, vegan_options &lt;chr&gt;,
+#   gluten_free &lt;chr&gt;, original_open_hours &lt;chr&gt;, open_days_per_week &lt;dbl&gt;,
+#   open_hours_per_week &lt;dbl&gt;, working_shifts_per_week &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 43
+  restaurant_link     restaurant_name  original_location country region province
+  &lt;chr&gt;               &lt;chr&gt;            &lt;chr&gt;             &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;   
+1 g10001637-d10002227 Le 147           &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Haute-V…
+2 g10001637-d14975787 Le Saint Jouvent &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Haute-V…
+3 g10002858-d4586832  Au Bout du Pont  &quot;[\&quot;Europe\&quot;, \&quot;… France  Centr… Berry   
+4 g10002986-d3510044  Le Relais de Na… &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Correze 
+5 g10022428-d9767191  Relais Du MontS… &quot;[\&quot;Europe\&quot;, \&quot;… France  Occit… Aveyron 
+6 g10029260-d6605477  L&#39;Auberge Du Vi… &quot;[\&quot;Europe\&quot;, \&quot;… France  Auver… Loire   
+# ℹ 37 more variables: city &lt;chr&gt;, address &lt;chr&gt;, latitude &lt;dbl&gt;,
+#   longitude &lt;dbl&gt;, claimed &lt;chr&gt;, awards &lt;chr&gt;, popularity_detailed &lt;chr&gt;,
+#   popularity_generic &lt;chr&gt;, top_tags &lt;chr&gt;, price_level &lt;chr&gt;,
+#   price_range &lt;chr&gt;, meals &lt;chr&gt;, cuisines &lt;chr&gt;, special_diets &lt;chr&gt;,
+#   features &lt;chr&gt;, vegetarian_friendly &lt;chr&gt;, vegan_options &lt;chr&gt;,
+#   gluten_free &lt;chr&gt;, original_open_hours &lt;chr&gt;, open_days_per_week &lt;dbl&gt;,
+#   open_hours_per_week &lt;dbl&gt;, working_shifts_per_week &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="cleaning-missingness" class="level1">
+<h1>Cleaning missingness</h1>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,083,397 × 44
+   restaurant_link     restaurant_name original_location country region province
+   &lt;chr&gt;               &lt;chr&gt;           &lt;chr&gt;             &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;   
+ 1 g10001637-d10002227 Le 147          &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Haute-V…
+ 2 g10001637-d14975787 Le Saint Jouve… &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Haute-V…
+ 3 g10002858-d4586832  Au Bout du Pont &quot;[\&quot;Europe\&quot;, \&quot;… France  Centr… Berry   
+ 4 g10002986-d3510044  Le Relais de N… &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Correze 
+ 5 g10022428-d9767191  Relais Du Mont… &quot;[\&quot;Europe\&quot;, \&quot;… France  Occit… Aveyron 
+ 6 g10029260-d6605477  L&#39;Auberge Du V… &quot;[\&quot;Europe\&quot;, \&quot;… France  Auver… Loire   
+ 7 g10029907-d17781655 Cafe Restauran… &quot;[\&quot;Europe\&quot;, \&quot;… France  Occit… Aude    
+ 8 g10029907-d8079764  L&#39;entre 2       &quot;[\&quot;Europe\&quot;, \&quot;… France  Occit… Aude    
+ 9 g10036850-d8414223  Noste Courtiu   &quot;[\&quot;Europe\&quot;, \&quot;… France  Occit… Ariege  
+10 g10054961-d3387712  Chez Claudine   &quot;[\&quot;Europe\&quot;, \&quot;… France  Grand… Vosges  
+# ℹ 1,083,387 more rows
+# ℹ 38 more variables: city &lt;chr&gt;, address &lt;chr&gt;, latitude &lt;dbl&gt;,
+#   longitude &lt;dbl&gt;, claimed &lt;chr&gt;, awards &lt;chr&gt;, popularity_detailed &lt;chr&gt;,
+#   popularity_generic &lt;chr&gt;, top_tags &lt;chr&gt;, price_level &lt;chr&gt;,
+#   price_range &lt;chr&gt;, meals &lt;chr&gt;, cuisines &lt;chr&gt;, special_diets &lt;chr&gt;,
+#   features &lt;chr&gt;, vegetarian_friendly &lt;chr&gt;, vegan_options &lt;chr&gt;,
+#   gluten_free &lt;chr&gt;, original_open_hours &lt;chr&gt;, open_days_per_week &lt;dbl&gt;, …</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 43
+  restaurant_link     restaurant_name  original_location country region province
+  &lt;chr&gt;               &lt;chr&gt;            &lt;chr&gt;             &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;   
+1 g10001637-d10002227 Le 147           &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Haute-V…
+2 g10001637-d14975787 Le Saint Jouvent &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Haute-V…
+3 g10002858-d4586832  Au Bout du Pont  &quot;[\&quot;Europe\&quot;, \&quot;… France  Centr… Berry   
+4 g10002986-d3510044  Le Relais de Na… &quot;[\&quot;Europe\&quot;, \&quot;… France  Nouve… Correze 
+5 g10022428-d9767191  Relais Du MontS… &quot;[\&quot;Europe\&quot;, \&quot;… France  Occit… Aveyron 
+6 g10029260-d6605477  L&#39;Auberge Du Vi… &quot;[\&quot;Europe\&quot;, \&quot;… France  Auver… Loire   
+# ℹ 37 more variables: city &lt;chr&gt;, address &lt;chr&gt;, latitude &lt;dbl&gt;,
+#   longitude &lt;dbl&gt;, claimed &lt;chr&gt;, awards &lt;chr&gt;, popularity_detailed &lt;chr&gt;,
+#   popularity_generic &lt;chr&gt;, top_tags &lt;chr&gt;, price_level &lt;chr&gt;,
+#   price_range &lt;chr&gt;, meals &lt;chr&gt;, cuisines &lt;chr&gt;, special_diets &lt;chr&gt;,
+#   features &lt;chr&gt;, vegetarian_friendly &lt;chr&gt;, vegan_options &lt;chr&gt;,
+#   gluten_free &lt;chr&gt;, original_open_hours &lt;chr&gt;, open_days_per_week &lt;dbl&gt;,
+#   open_hours_per_week &lt;dbl&gt;, working_shifts_per_week &lt;dbl&gt;, …</code></pre>
 </div>
 </div>
 </section>
