@@ -1,0 +1,42 @@
+---
+title: "Progress Memo 1"
+subtitle: |
+  | Final Project 
+  | Data Science 1 with R (STAT 301-1)
+author: "Nikole Montero Cervantes"
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+    
+execute:
+  echo: false
+  warning: false
+
+from: markdown+emoji 
+---
+  
+::: {.callout-tip icon=false}
+
+## Github Repo Link
+
+[https://github.com/stat301-1-2023-fall/final-project-1-Nikole26.git](https://github.com/stat301-1-2023-fall/final-project-1-Nikole26.git)
+
+:::
+
+```{r}
+#| echo: true
+# Loading libraries 
+library(tidyverse)
+library(skimr)
+
+# Loading data 
+tripadvisor_european_restaurants <- read_csv("data/tripadvisor_european_restaurants.csv")
+```
+# Data management
+```{r}
+skim_without_charts(tripadvisor_european_restaurants)
+```
+
+
