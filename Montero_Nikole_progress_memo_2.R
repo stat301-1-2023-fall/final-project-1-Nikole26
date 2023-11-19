@@ -54,5 +54,5 @@ restaurants_tidy <- european_restaurants %>%
       gluten_free == "Y" ~ "gluten_free",
       TRUE ~ "None"
     )) %>%
-  select(-vegetarian, -vegan, -gluten_free)
+  select(-vegetarian, -vegan, -gluten_free)  
     
