@@ -132,30 +132,33 @@ gt_table <- gt(table_data) %>%
 ## Save the gt table as an image
 gtsave(gt_table, file = "figures/table_image.png")
 
-# Wrangling the cuisines---------------------
-restaurants_tidy_2 <- restaurants_tidy %>%
-  mutate(
-    cuisine_group = case_when(
-      grepl("Pizza|Northern-Italian|Central-Italian|Southern-Italian", tolower(cuisines)) ~ "Italian",
-      grepl("Sushi", tolower(cuisines)) ~ "Japanese",
-      grepl("Brew Pub", tolower(cuisines)) ~ "American",
-      # Add more conditions for other cuisine groups
-      TRUE ~ "Other"
-    )
-  )
+# Wrangling the top_tags---------------------
+restaurants_tidy_3 <- mutate(restaurants_tidy_2, top_tags = lapply(top_tags, function(tags) {
+  if (!is.null(tags)) {
+    tags[tags %in% c("Pizza", "Northern Italy", "Southern Italy")] <- "Italian"
+    tags[tags == "Sushi"] <- "Japanese"
+    tags[tags %in% c("Brew Pub", "Wine Bar", "Pub")] <- "Bar"
+    tags <- gsub("Delivery only", "", tags)
+    tags <- unique(tags)
+  }
+  return(tags)
+}))
 
-#restaurants_tidy_2 <- restaurants_tidy |>
+#restaurants_tidy_3 <- restaurants_tidy_3 |>
+#  rename(top_tags = "cuisines")
   #  mutate(cuisines = trimws(cuisines)) |>
 #  separate_rows(meals, sep = ", ") |>
-#  mutate(meals_present = 1) |>
-#  pivot_wider(names_from = meals, values_from = meals_present, values_fill = NA)
-
-# Dropping variables that won't be needed for the analysis----------
-## After all the wrangling data find the NA for each variable
-#missingness <- restaurants_tidy |>
-#  summarise(across(-avg_price, ~sum(is.na(.))))
+#  mutate(cuisines_present = 1) |>
+#  pivot_wider(names_from = cuisines, values_from = cuisines_present, values_fill = NA)
 
 #restaurants_tidy_3 <- restaurants_tidy %>%
 #  unnest(top_tags) %>%
 #  mutate(tag_present = 1) %>%
 #  pivot_wider(names_from = top_tags, values_from = tag_present, values_fill = 0)
+
+# Dropping variables that won't be needed for the analysis----------
+## After all the wrangling data find the NA for each variable
+missingness <- restaurants_tidy_3 |>
+  summarise(across(-avg_price, ~sum(is.na(.))))
+
+#address,original location, keywords, feautures, cuisine, popularity
