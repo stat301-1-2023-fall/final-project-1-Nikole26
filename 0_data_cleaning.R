@@ -3,6 +3,8 @@ library(tidyverse)
 library(skimr)
 library(DT)
 library(stringr)
+library(gt)
+library(webshot2)
 
 # Loading data -----------------
 european_restaurants <- read_csv("data/tripadvisor_european_restaurants.csv")
@@ -13,16 +15,16 @@ skim_without_charts(european_restaurants)
 head(european_restaurants)
 
 # Adding a country code
-countries_dict <- c('Austria' = 'AUT', 'Belgium' = 'BEL', 'Bulgaria' = 'BGR', 'Croatia' = 'HRV', 'Czech Republic' = 'CZE',
-                    'Denmark' = 'DNK', 'England' = 'GBR', 'Finland' = 'FIN', 'France' = 'FRA', 'Germany' = 'DEU',
-                    'Greece' = 'GRC', 'Hungary' = 'HUN', 'Ireland' = 'IRL', 'Italy' = 'ITA', 'Northern Ireland' = 'GBR',
-                    'Poland' = 'POL', 'Portugal' = 'PRT', 'Romania' = 'ROU', 'Scotland' = 'GBR', 'Slovakia' = 'SVK',
-                    'Spain' = 'ESP', 'Sweden' = 'SWE', 'The Netherlands' = 'NLD', 'Wales' = 'GBR')
+#countries_dict <- c('Austria' = 'AUT', 'Belgium' = 'BEL', 'Bulgaria' = 'BGR', 'Croatia' = 'HRV', 'Czech Republic' = 'CZE',
+#                    'Denmark' = 'DNK', 'England' = 'GBR', 'Finland' = 'FIN', 'France' = 'FRA', 'Germany' = 'DEU',
+#                    'Greece' = 'GRC', 'Hungary' = 'HUN', 'Ireland' = 'IRL', 'Italy' = 'ITA', 'Northern Ireland' = 'GBR',
+#                    'Poland' = 'POL', 'Portugal' = 'PRT', 'Romania' = 'ROU', 'Scotland' = 'GBR', 'Slovakia' = 'SVK',
+#                    'Spain' = 'ESP', 'Sweden' = 'SWE', 'The Netherlands' = 'NLD', 'Wales' = 'GBR')
 
 # Displaying the code for each restaurant 
-european_restaurants$country_code <- 
-  ifelse(european_restaurants$country %in% names(countries_dict),                   countries_dict[european_restaurants$country],
-         european_restaurants$country)   
+#european_restaurants$country_code <- 
+#  ifelse(european_restaurants$country %in% names(countries_dict),                   countries_dict[european_restaurants$country],
+#         european_restaurants$country)   
 
 #european_restaurants %>%
 #summarise_all(~sum(is.na(.))) %>%
@@ -59,7 +61,7 @@ restaurants_tidy <- restaurants_tidy |>
     TRUE ~ price_level  # Keep other values unchanged
   ))
 
-# Wrangling top tags and dealing with doubles
+# Wrangling top tags and dealing with doubles ------------
 ## Separating the values in the strings
 restaurants_tidy$top_tags <- str_split(restaurants_tidy$top_tags, ", ", simplify = FALSE)
 
@@ -96,7 +98,7 @@ restaurants_tidy$top_tags <- lapply(restaurants_tidy$top_tags, function(tags) {
   tags
 })
 
-# Reorganizing with price range
+# Reorganizing with price range-------------
 ##Creating a new variable: average price
 restaurants_tidy <-  restaurants_tidy |>
  mutate(
@@ -106,6 +108,54 @@ restaurants_tidy <-  restaurants_tidy |>
 ) |>
 select(-c(minimum_range, maximum_range))
 
-# After all the wrangling data find the NA for each variable
-missingness <- restaurants_tidy |>
-  summarise(across(-avg_price, ~sum(is.na(.))))
+#Seeing unique values---------------
+##Meals
+unique(restaurants_tidy$meals)
+
+##Cuisines
+unique(restaurants_tidy$cuisines)
+
+##Unique values of top_tags
+unique(restaurants_tidy$top_tags)
+
+#Showing why I work with cuisines and not top_tags---------------
+# Assuming 'restaurants_tidy' is your dataset
+table_data <- head(select(restaurants_tidy, top_tags, cuisines), 10)
+
+## Create a gt table
+gt_table <- gt(table_data) %>%
+  tab_spanner(
+    label = "Comparison between cuisines and top_tags",
+    columns = c(everything())
+  )
+
+## Save the gt table as an image
+gtsave(gt_table, file = "figures/table_image.png")
+
+# Wrangling the cuisines---------------------
+restaurants_tidy_2 <- restaurants_tidy %>%
+  mutate(
+    cuisine_group = case_when(
+      grepl("Pizza|Northern-Italian|Central-Italian|Southern-Italian", tolower(cuisines)) ~ "Italian",
+      grepl("Sushi", tolower(cuisines)) ~ "Japanese",
+      grepl("Brew Pub", tolower(cuisines)) ~ "American",
+      # Add more conditions for other cuisine groups
+      TRUE ~ "Other"
+    )
+  )
+
+#restaurants_tidy_2 <- restaurants_tidy |>
+  #  mutate(cuisines = trimws(cuisines)) |>
+#  separate_rows(meals, sep = ", ") |>
+#  mutate(meals_present = 1) |>
+#  pivot_wider(names_from = meals, values_from = meals_present, values_fill = NA)
+
+# Dropping variables that won't be needed for the analysis----------
+## After all the wrangling data find the NA for each variable
+#missingness <- restaurants_tidy |>
+#  summarise(across(-avg_price, ~sum(is.na(.))))
+
+#restaurants_tidy_3 <- restaurants_tidy %>%
+#  unnest(top_tags) %>%
+#  mutate(tag_present = 1) %>%
+#  pivot_wider(names_from = top_tags, values_from = tag_present, values_fill = 0)
