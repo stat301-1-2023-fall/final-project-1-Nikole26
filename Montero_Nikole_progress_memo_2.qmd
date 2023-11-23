@@ -211,7 +211,7 @@ This plot displays the number of restaurants per country. France has the highest
 
 #### For Special Diets
 ```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics("figures/special_diets_plot.png")
+include_graphics("figures/special_diets_plot.png")
 ```
 
 This plot shows that most of the restaurants on TripAdvisor do not offer special diets in their menus. However, there is at least a moderate presence of vegetarian options.
