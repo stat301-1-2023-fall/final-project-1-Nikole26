@@ -173,6 +173,8 @@ skim_without_charts(data_final) |>
   kable()
 ```
 
+<brp>
+
 **Note:** This dataset now contains 11,784 observations and 31 variables. Among these variables, 12 are categorical, 1 is a list and 18 are numericals.
 
 ## Univariate Analysis
