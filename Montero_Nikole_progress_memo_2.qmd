@@ -1,0 +1,247 @@
+---
+title: "Progress Memo 2"
+subtitle: |
+  | Final Project 
+  | Data Science 1 with R (STAT 301-1)
+author: "Nikole Montero Cervantes"
+date: today
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+    
+execute:
+  echo: false
+  warning: false
+
+from: markdown+emoji 
+---
+  
+::: {.callout-tip icon=false}
+
+## Github Repo Link
+
+[https://github.com/stat301-1-2023-fall/final-project-1-Nikole26.git](https://github.com/stat301-1-2023-fall/final-project-1-Nikole26.git)
+
+:::
+
+```{r}
+# Loading libraries 
+library(tidyverse)
+library(skimr)
+library(DT)
+library(stringr)
+library(tableHTML)
+library(knitr)
+```
+
+```{r}
+# Loading data 
+data <- read_csv("data/tripadvisor_european_restaurants.csv")
+```
+
+# Initial Data Review
+
+Dataset shows information regarding restaurants around 31 different European countries on TripAdvisor.
+
+This dataset contains 1,083,397 observations and 42 variables. Among these variables, 25 are categorical and 17 are numericals.
+
+```{r}
+skim_without_charts(data) |>
+  kable()
+```
+
+# Project advance
+## Cleaning Data
+**Main Goal Achieved:** I have cleaned and wrangled my data successfully. 
+
+Firstly, I addressed the presence of duplicate variables, specifically within the 'special_diets' variable. I utilized the rename() function to provide more intuitive names for certain columns, transforming 'vegetarian_friendly' into 'vegetarian,' 'vegan_options' into 'vegan,' and 'gluten_free' into 'gluten_free.' Additionally, I introduced two new columns, 'special_diets' and 'awards,' using the mutate() function. 'special_diets' was created with the case_when() function, categorizing special diets based on the presence of 'Y' values in the 'vegetarian,' 'vegan,' and 'gluten_free' columns. The 'awards' variable was modified using the ifelse() function to replace any missing values with the string 'none,' as not every restaurant can receive an award due to competition.
+
+Next, I focused on the 'price_level' column. I identified unique values and transformed specific values to enhance readability, replacing "€€€€" with 'expensive,' "€€-€€€" with 'mid-range,' and "€" with 'cheap.'
+
+I introduced a new variable, 'average price,' by manipulating the existing 'price range' variable formatted as €XX-€XX. This involved creating two additional columns, 'minimum_range' and 'maximum_range,' to extract numeric values from the 'price_range' column and calculate the new variable 'avg_price.'
+
+Upon realizing that the 'top_tags' variable still presented values that would be repeated in the other columns, I separated the values within each string of the 'top_tags' column based on the delimiter ', '. This transformed it from a single string containing multiple tags into a list where each element corresponds to an individual tag. Subsequently, I eliminated double information through a function that filters out redundant tags identified.
+
+Acknowledging that the 'cuisines' variable had more NA values than 'top_tags,' I decided to continue working with 'top_tags' and refined the column using the lapply() function alongside a custom function. This reclassified distinct tags into broader regional or thematic groupings, unifying tags associated with bars under the label 'Bar' and diverse cuisine tags into corresponding regional categories, specifically categorized by continents. I renamed the 'top_tags' column to 'cuisines,' providing a higher-level perspective on culinary classifications.
+
+After wrangling and cleaning, I calculated and addressed missing values. I excluded variables with the highest number of missing values and removed irrelevant columns such as 'address,' 'original_location,' 'keywords,' 'features,' 'cuisines,' 'popularity_detailed,' 'popularity_generic,' 'price_range,' and 'original_open_hours.'
+
+Consequently, I downsampled my dataset by prioritizing the 'average_price' variable. Therefore, I excluded all rows with NA in that variable. This downsampling resulted in a smaller dataset with missing values limited to one variable.
+
+My cleaning and wrangling process were crucial to ensuring an enhanced quality and subsequent analysis of my dataset. The following table shows the updated status of my dataset.
+
+```{r}
+#| label: Updated data
+data_tidy_1 <- data |>
+  rename(
+    vegetarian = vegetarian_friendly,
+    vegan = vegan_options,
+    gluten_free = gluten_free
+  ) |>
+  mutate(
+    awards = ifelse(is.na(awards), "none", awards),
+    special_diets = case_when(
+      vegetarian == "Y" ~ "vegetarian",
+      vegan == "Y" ~ "vegan",
+      gluten_free == "Y" ~ "gluten_free",
+      TRUE ~ "None"
+    )) |>
+  select(-vegetarian, -vegan, -gluten_free) 
+
+data_tidy_1 <- data_tidy_1 |>
+  mutate(price_level = case_when(
+    price_level == "€€€€" ~ "expensive",
+    price_level == "€€-€€€" ~ "mid-range",
+    price_level == "€" ~ "cheap",
+    TRUE ~ price_level  # Keep other values unchanged
+  ))
+
+data_tidy_1$top_tags <- str_split(data_tidy_1$top_tags, ", ", simplify = FALSE)
+
+data_tidy_1$top_tags <- lapply(data_tidy_1$top_tags, function(tags) {
+  tags <- tags[!(tags %in% c("Vegetarian Friendly", "Vegan Options", "Gluten Free Options",
+                             "Cheap Eats", "Mid-range", "Fine Dining"))]
+  if (length(tags) == 0) {
+    tags <- NA
+  }
+  tags
+})
+
+data_tidy_2 <-  data_tidy_1 |>
+  mutate(
+    minimum_range = as.numeric(str_extract(price_range, "\\d+(\\.\\d+)?")),
+    maximum_range = as.numeric(str_extract_all(price_range, "\\d+(\\.\\d+)?") %>% sapply(function(x) x[2])),
+    avg_price = (minimum_range + maximum_range) / 2
+  ) |>
+  select(-c(minimum_range, maximum_range))
+
+data_tidy_2$top_tags <- lapply(data_tidy_2$top_tags, function(tags) {
+  tags[tags %in% c("Brew Pub", "Wine Bar", "Pub")] <- "Bar"
+  
+  tags[tags %in% c("Pizza", "Northern Italy", "Southern Italy",
+                   "Nepalese", "Vietnamese", "Hong Kong", "Thai",                            "Bangladeshi", "Cantonese", "Zhejiang", "Japanese",                       "Sushi", "Asian", "Mongolian", "Egypt", "Egyptian",                       "Balti", "Philippine", "Tuscan", "Indian", "Tibetan", "Fujian", "Indonesian", "Korean", "Hubei", "Turkish", "Russian", "Taiwanese", 
+                   "Persian", "Middle Eastern", "Lebanese", "Cambodian",
+                   "Japenese", "Pakistani", "Szechuan", "Chinese")] <- "Asia"
+  
+  tags[tags %in% c("Welsh", "Scottish", "Irish", "European", "French",
+                   "Italian", "Mediterranean", "British", "Central-Italian",
+                   "Dutch", "Greek", "Portuguese", "Czech", "Scandinavian", 
+                   "Central European", "Danish", "Romanian", "Lombard",
+                   "Ligurian", "Sicilian", "Polish", "Sardinian", "Campania",
+                   "Neapolitan", "Austrian", "German", "Belgian", "Southern-Italian", "Basque", "Turkish", "Apulian", "Russian", "Romana", "Northern-Italian", "Southwestern", "Norwegian", "Scandinavian", "Eastern European", "Moroccan", "Armenian", "Swiss", "Spanish", "Catalan")] <- "Europe"
+  
+  tags[tags %in% c("Egyptian", "Egypt", "African", "Algerian", "Contemporary")] <- "Africa"
+  
+  tags[tags %in% c("Chilean", "Venezuelan", "Peruvian", "South American",
+                   "Argentinian", "Latin", "Brazilian")] <- "South America"
+  
+  tags[tags %in% c("Mexican", "Central American", "Native American", "Cuban", "Latin", "Caribbean", "Canadian", "American")] <- "North America"
+  
+  tags[tags %in% c("New Zealand", "Polynesian")] <- "Oceania"
+  
+  tags <- tags[!(tags %in% c("Delivery Only", "Dinner", "Diner", "Healthy", "Barbecue", "Caucasian", "Quick Bites", "Cajun & Creole", "International", "Deli", "Dessert", "Bakeries", "Fast food", "Cafe", "Street Food", "Seafood", "Gastropub", "Dining bars", "Grill", "Steakhouse"))]
+  
+  if (length(tags) == 0) {
+    tags <- NA
+  } else {
+    tags <- paste0(unique(tags), collapse = ", ")
+  }
+  
+  tags
+})
+
+rows_NA <- data_tidy_2 |>
+  summarise(across(everything(), ~sum(is.na(.))))
+
+data_tidy_3 <- select(data_tidy_2, -address, -original_location, 
+                      -keywords, -features, -cuisines, -popularity_detailed, 
+                      -popularity_generic, -price_range, -original_open_hours)
+
+data_final <- data_tidy_3[rowSums(!is.na(data_tidy_3)) > 24, ]
+
+data_final <- na.omit(data_final, cols = "average_price")
+
+data_final <- data_final |>
+  rename(cuisines = top_tags)
+```
+
+
+```{r}
+skim_without_charts(data_final) |>
+  kable()
+```
+
+**Note:** This dataset now contains 11,784 observations and 31 variables. Among these variables, 12 are categorical, 1 is a list and 18 are numericals.
+
+## Univariate Analysis
+
+#### For Restaurant Name
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/top_restaurants_plot.png")
+```
+
+In this plot, the top 10 restaurants in my TripAdvisor dataset are displayed. Leon de Bruxelles is the most popular restaurant, and it is also evident that most of the top restaurants are French.
+
+#### For Average Rating
+
+```{r, echo=FALSE, fig.align='center'}
+include_graphics("figures/avg_rating_plot.png")
+```
+
+In this plot, it is observed that among all the restaurants in those 31 different European countries on TripAdvisor, there is a high rating, approximately between 4 to 4.8. This could suggest that the average quality offered in European restaurants is really good.
+
+
+#### For Open Days Per Week
+
+```{r, echo=FALSE, fig.align='center'}
+include_graphics("figures/open_days_per_week_plot.png")
+```
+
+
+Through this plot, it is possible to appreciate that, according to TripAdvisor, most European restaurants do not tend to open on weekdays, particularly from Monday to Thursday. However, their preferred/most frequent opening days are Friday, Saturday, and Sunday. Finally, the day with the most openings is Sunday.
+
+#### For Country
+```{r, echo=FALSE, fig.align='center'}
+include_graphics("figures/country_plot.png")
+```
+
+This plot displays the number of restaurants per country. France has the highest number of restaurants, which could potentially explain why, in my plot of the top 10 restaurants, most of them were French. Croatia and Finland are the countries with the least number of restaurants on TripAdvisor.
+
+#### For Special Diets
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("figures/special_diets_plot.png")
+```
+
+This plot shows that most of the restaurants on TripAdvisor do not offer special diets in their menus. However, there is at least a moderate presence of vegetarian options.
+
+#### For Average Price
+```{r, echo=FALSE, fig.align='center'}
+include_graphics("figures/avg_price.png")
+```
+
+This histogram is right-skewed, with a mode around 50 euros. This could indicate that the majority of European restaurants appearing on TripAdvisor are affordable and generally do not exceed 100 euros. However, there are a few exceptions, which explains why the average price extends to 500 euros in the plot.
+
+#### For Price Level
+```{r, echo=FALSE, fig.align='center'}
+include_graphics("figures/price_level_plot.png")
+```
+
+It is evident in this bar plot that most of the restaurants are mid-range, aligning with what was observed previously in the average price plot. This reinforces the idea that the food offered in the majority of the restaurants in this dataset is affordable and potentially budget-friendly.
+
+# Next steps
+
+In my upcoming analysis, my primary focus is on exploring the intricate relationship between pricing and customer ratings within the European restaurant landscape. I intend to unravel patterns in the quality-price dynamic using the TripAdvisor dataset. Leveraging the latitude and longitude variables, I plan to create informative visualization graphs to uncover spatial insights related to restaurant ratings and pricing.
+
+Additionally, my analysis will extend to investigating the dynamics between price levels and awards, aiming to uncover how a restaurant's reputation influences its pricing strategy. Through this exploration, I aspire to discern how a restaurant's standing and accolades contribute to shaping its pricing structure on a broader scale.
+
+Moreover, I am keen on delving into the operational aspects of European restaurants, including the number of hours they operate per week. I aim to correlate these operational hours with the types of meals offered, seeking to understand how the availability of various meals may impact a restaurant's overall performance.
+
+Furthermore, I am interested in exploring the diversity of meals offered in these European restaurants. By examining the types and quantity of meals provided, I hope to identify trends and patterns that could contribute to the overall dining experience and, consequently, the restaurant's reputation.
+
+**Guidance Research Questions**
+
+Some of the questions that would serve as guidance in this project. 
+
+What factors contribute to the variation in prices and their correlation with customer ratings across European restaurants? What are the key elements that distinguish certain European countries, such as France?

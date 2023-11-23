@@ -11,8 +11,8 @@ data <- read_csv("data/tripadvisor_european_restaurants.csv")
 
 
 # Data management--------------
-skim_without_charts(european_restaurants)
-head(european_restaurants)
+skim_without_charts(data)
+head(data)
 
 # Adding a country code
 #countries_dict <- c('Austria' = 'AUT', 'Belgium' = 'BEL', 'Bulgaria' = 'BGR', 'Croatia' = 'HRV', 'Czech Republic' = 'CZE',
@@ -33,7 +33,7 @@ head(european_restaurants)
 #  mutate_all(as.integer)
 
 # Dealing with NA value for award and special diets--------------
-data_tidy_1 <- european_restaurants %>%
+data_tidy_1 <- data %>%
   rename(
     vegetarian = vegetarian_friendly,
     vegan = vegan_options,
@@ -131,48 +131,102 @@ gt_table <- gt(table_data) %>%
 gtsave(gt_table, file = "figures/table_image.png")
 
 # Wrangling the top_tags---------------------
-data_tidy_2 <- mutate(data_tidy_2, top_tags = lapply(top_tags, function(tags) {
-  if (!is.null(tags)) {
-    tags[tags %in% c("Pizza", "Northern Italy", "Southern Italy")] <- "Italian"
-    tags[tags == "Sushi"] <- "Japanese"
-    tags[tags %in% c("Brew Pub", "Wine Bar", "Pub")] <- "Bar"
-    tags <- gsub("Delivery only", "", tags)
-    tags <- unique(tags)
+data_tidy_2$top_tags <- lapply(data_tidy_2$top_tags, function(tags) {
+  tags[tags %in% c("Brew Pub", "Wine Bar", "Pub")] <- "Bar"
+  
+  tags[tags %in% c("Pizza", "Northern Italy", "Southern Italy",
+                   "Nepalese", "Vietnamese", "Hong Kong", "Thai", "Bangladeshi",
+                   "Cantonese", "Zhejiang", "Japanese", "Sushi", "Asian",
+                   "Mongolian", "Egypt", "Egyptian", "Balti", "Philippine",
+                   "Tuscan", "Indian", "Tibetan", "Fujian", "Indonesian",
+                   "Korean", "Hubei", "Turkish", "Russian", "Taiwanese", 
+                   "Persian", "Middle Eastern", "Lebanese", "Cambodian",
+                   "Japenese", "Pakistani", "Szechuan", "Chinese")] <- "Asia"
+  
+  tags[tags %in% c("Welsh", "Scottish", "Irish", "European", "French",
+                   "Italian", "Mediterranean", "British", "Central-Italian",
+                   "Dutch", "Greek", "Portuguese", "Czech", "Scandinavian", 
+                   "Central European", "Danish", "Romanian", "Lombard",
+                   "Ligurian", "Sicilian", "Polish", "Sardinian", "Campania",
+                   "Neapolitan", "Austrian", "German", "Belgian", "Southern-Italian",
+                   "Basque", "Turkish", "Apulian", "Russian", "Romana",
+                   "Northern-Italian", "Southwestern", "Norwegian", "Scandinavian",
+                   "Eastern European", "Moroccan", "Armenian", "Swiss", "Spanish",
+                   "Catalan")] <- "Europe"
+  
+  tags[tags %in% c("Egyptian", "Egypt", "African", "Algerian", "Contemporary")] <- "Africa"
+  
+  tags[tags %in% c("Chilean", "Venezuelan", "Peruvian", "South American",
+                   "Argentinian", "Latin", "Brazilian")] <- "South America"
+  
+  tags[tags %in% c("Mexican", "Central American", "Native American", "Cuban", "Latin",
+                   "Caribbean", "Canadian", "American")] <- "North America"
+  
+  tags[tags %in% c("New Zealand", "Polynesian")] <- "Oceania"
+  
+  tags <- tags[!(tags %in% c("Delivery Only", "Dinner", "Diner", "Healthy", "Barbecue", "Caucasian",
+                             "Quick Bites", "Cajun & Creole", "International", "Deli", "Dessert",
+                             "Bakeries", "Fast food", "Cafe", "Street Food", "Seafood", "Gastropub", 
+                             "Dining bars", "Grill", "Steakhouse"))]
+  
+  if (length(tags) == 0) {
+    tags <- NA
+  } else {
+    tags <- paste0(unique(tags), collapse = ", ")
   }
-  return(tags)
-}))
+  
+  tags
+})
 
 # Dropping variables--------------------
 ## After all the wrangling data find the NA for each variable
 rows_NA <- data_tidy_2 |>
   summarise(across(everything(), ~sum(is.na(.))))
 
-#data_tidy_3 <- select(data_tidy_2, -address, -original_location, 
-#                             -keywords, -features, -cuisines, -popularity_detailed, 
-#                             -popularity_generic, -price_range, -original_open_hours)
+data_tidy_3 <- select(data_tidy_2, -address, -original_location, 
+                             -keywords, -features, -cuisines, -popularity_detailed, 
+                             -popularity_generic, -price_range, -original_open_hours)
+
 ## Seeing Variables with most NA values
-#restaurants_tidy_3[rowSums(is.na(restaurants_tidy_3)) > 35, ]
-#restaurants_tidy_3[rowSums(is.na(restaurants_tidy_3)) > 30, ]
-#restaurants_tidy_3[rowSums(is.na(restaurants_tidy_3)) > 25, ]
+data_tidy_3[rowSums(is.na(data_tidy_3)) > 35, ]
+data_tidy_3[rowSums(is.na(data_tidy_3)) > 30, ]
+data_tidy_3[rowSums(is.na(data_tidy_3)) > 25, ]
 
 
 # Eliminating rows with most NA values--------------
-#restaurants_tidy_4 <- restaurants_tidy_3[rowSums(!is.na(restaurants_tidy_3)) > 24, ]
-#restaurants_tidy_3[rowSums(!is.na(restaurants_tidy_3)) > 24, ]
+data_tidy_4 <- data_tidy_3[rowSums(!is.na(data_tidy_3)) > 24, ]
+data_tidy_4[rowSums(!is.na(data_tidy_4)) > 24, ]
 
-#rows_NA_2 <- restaurants_tidy_4 |>
-#  summarise(across(everything(), ~sum(is.na(.))))
+rows_NA_2 <- data_tidy_4 %>%
+  summarise(across(everything(), ~sum(is.na(.) | . == "NA")))
 
 # Average price-------------------------
-# Decided to prioritize the average_price variable, so got rid of all NA values in it 
-#restaurants_trying <- na.omit(restaurants_tidy_4, cols = "average_price")
+##Decided to prioritize the average_price variable, so got rid of all NA values in it 
+data_final <- na.omit(data_tidy_4, cols = "average_price")
 
-#rows_NA_3 <- restaurants_trying |>
-#  summarise(across(everything(), ~sum(is.na(.))))
-#until here
+rows_NA_3 <- data_final |>
+  summarise(across(everything(), ~sum(is.na(.))))
 
-#restaurants_tidy_3 <- restaurants_tidy_3 |>
-#  rename(top_tags = "cuisines")
+data_final <- data_final |>
+  rename(cuisines = top_tags)
+
+# Saving table-----------------
+missing_summary <- data_tidy_4 %>%
+  summarise(across(everything(), ~sum(is.na(.) | . == "NA"), .names = "missing_{.col}")) %>%
+  gather(variable, missing_count)
+
+# Create a gt table
+missing_table <- gt(missing_summary) %>%
+  tab_spanner(
+    label = "Missingness Summary",
+    columns = c(missing_count)
+  )
+
+# Print the gt table
+gtsave(gt_table, file = "figures/missingness_table.png")
+
+
+#data_trying_1 <- data_trying_1 |>
 #  mutate(cuisines = trimws(cuisines)) |>
 #  separate_rows(meals, sep = ", ") |>
 #  mutate(cuisines_present = 1) |>
@@ -180,5 +234,5 @@ rows_NA <- data_tidy_2 |>
 
 #restaurants_tidy_3 <- restaurants_tidy %>%
 #  unnest(top_tags) %>%
-#  mutate(tag_present = 1) %>%
-#  pivot_wider(names_from = top_tags, values_from = tag_present, values_fill = 0)
+#  mutate(tag_present = 1) %>% 
+#  pivot_wider(names_from = top_tags, values_from = tag_present, values_fill = 0) 
