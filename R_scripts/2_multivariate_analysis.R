@@ -6,11 +6,12 @@ library(stringr)
 library(gt)
 library(webshot2)
 library(ggplot2)
-
+library(plotly)
+library(tidyr)
 # Loading data -----------------
 data <- read_csv("data/tripadvisor_european_restaurants.csv")
 
-# Cleaning and Wrangling------------
+# Data cleanead-----------
 data_tidy_1 <- data %>%
   rename(
     vegetarian = vegetarian_friendly,
@@ -116,3 +117,36 @@ data_final <- na.omit(data_final, cols = "average_price")
 
 data_final <- data_final |>
   rename(cuisines = top_tags)
+
+# Multivariate Analysis--------------------
+## Latitude vs longitude
+visualization_data <- na.omit(data_final)
+ggplot(visualization_data, aes(x = longitude, y = latitude, label = city)) +
+  geom_point() +
+  geom_text(nudge_x = 0.1, nudge_y = 0.1) +
+  labs(title = "Cities Scatter Plot", x = "Longitude", y = "Latitude")
+
+## Food, Service, Value, rating
+data_final <- data_final |>
+  rename(
+    food_rating = "food",
+    service_rating = "service",
+    value_rating = "value"
+  )
+
+data_long <- gather(data_final, key = "rating_type", value = "rating", -restaurant_name)
+
+# Create a grouped bar chart
+ggplot(data_long, aes(x = restaurant_name, y = rating, fill = rating_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Restaurant Ratings",
+       x = "Restaurant",
+       y = "Rating",
+       fill = "Rating Type") +
+  theme_minimal()
+
+plot_ly(data_long, x = ~restaurant_name, y = ~rating, color = ~rating_type, type = 'bar') %>%
+  layout(title = "Restaurant Ratings",
+         xaxis = list(title = "Restaurant"),
+         yaxis = list(title = "Rating"),
+         barmode = 'group')
