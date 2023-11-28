@@ -9,6 +9,7 @@ library(ggplot2)
 library(plotly)
 library(tidyr)
 library(knitr)
+
 # Loading data -----------------
 data <- read_csv("data/tripadvisor_european_restaurants.csv")
 
@@ -121,8 +122,6 @@ data_final <- data_final |>
          food_rating = food,
          value_rating = value,
          service_rating = service)
-
-
 
 # Multivariate Analysis--------------------
 ## Latitude vs longitude
@@ -242,6 +241,9 @@ ggplot(most_expensive, aes(x = reorder(restaurant_name, -avg_price), y = avg_pri
        y = "Price",
        fill = "Average Rating") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Price level vs top rating
+
 
 
 # Combine the top 10 restaurants for each category into a single data frame
