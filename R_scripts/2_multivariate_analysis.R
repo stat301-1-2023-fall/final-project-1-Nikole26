@@ -117,7 +117,12 @@ data_final <- data_tidy_3[rowSums(!is.na(data_tidy_3)) > 24, ]
 data_final <- na.omit(data_final, cols = "average_price")
 
 data_final <- data_final |>
-  rename(cuisines = top_tags)
+  rename(cuisines = top_tags,
+         food_rating = food,
+         value_rating = value,
+         service_rating = service)
+
+
 
 # Multivariate Analysis--------------------
 ## Latitude vs longitude
@@ -130,14 +135,14 @@ plot_ly(visualization_data, x = ~longitude, y = ~latitude, text = ~city, type = 
 ###Since most of the restaurants offer a cuisine in Europe, we will narrow the 
 ###ratings within restaurant that offer European cuisine, bc that's what most inrested about
 
-european_restaurants <- filter(data_final, cuisines == "Europe")
+european_cuisine <- filter(data_final, cuisines == "Europe")
 
 ### Highest ratings
-top_food_ratings <- european_restaurants |>
+top_food_ratings <- european_cuisine |>
   arrange(desc(food_rating)) |>
   head(10)  
 
-ggplot(top_food_ratings, aes(x = restaurant_name, y = food_rating, fill = restaurant_name)) +
+ggplot(top_food_ratings, aes(x = restaurant_name, y = food_rating)) +
   geom_bar(stat = "identity") +
   ggtitle("Top 10 European Restaurants based on Food Rating") +
   xlab("Restaurant") +
@@ -145,11 +150,11 @@ ggplot(top_food_ratings, aes(x = restaurant_name, y = food_rating, fill = restau
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ### Lowest ratings
-bottom_food_ratings <- european_restaurants |>
+bottom_food_ratings <- european_cuisine |>
   arrange(food_rating) |>
   head(10)
 
-ggplot(bottom_food_ratings, aes(x = reorder(restaurant_name, -food_rating), y = food_rating, fill = paste(restaurant_name, city))) +
+ggplot(bottom_food_ratings, aes(x = restaurant_name, y = food_rating, fill = paste(restaurant_name, city))) +
   geom_bar(stat = "identity", position = "dodge") +
   ggtitle("Bottom 10 European Restaurants based on Food Rating") +
   xlab("Restaurant") +
@@ -159,7 +164,7 @@ ggplot(bottom_food_ratings, aes(x = reorder(restaurant_name, -food_rating), y = 
 ## Service Rating Highest and lowest values
 
 ### Highest ratings
-top_service_rating <- european_restaurants |>
+top_service_rating <- european_cuisine |>
   arrange(desc(service_rating)) |>
   head(10)  
 
@@ -171,7 +176,7 @@ ggplot(top_service_rating, aes(x = restaurant_name, y = service_rating)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ### Lowest ratings
-bottom_service_rating <- european_restaurants |>
+bottom_service_rating <- european_cuisine |>
   arrange(service_rating) |>
   head(10)
 
@@ -184,7 +189,7 @@ ggplot(bottom_service_rating, aes(x = reorder(restaurant_name, -service_rating),
 
 ## Value Rating Highest and lowest values
 ### Highest ratings
-top_value_rating <- european_restaurants |>
+top_value_rating <- european_cuisine |>
   arrange(desc(value_rating)) |>
   head(10)  
 
@@ -197,23 +202,47 @@ ggplot(top_value_rating, aes(x = restaurant_name, y = value_rating)) +
 top_value_ratings <- european_restaurants %>% top_n(10, wt = value_rating)
 
 ### Lowest ratings
-bottom_value_rating <- european_restaurants |>
+bottom_value_rating <- european_cuisine |>
   arrange(value_rating) |>
   head(10)
 
 ggplot(bottom_value_rating, aes(x = reorder(restaurant_name, -value_rating), y = value_rating)) +
   geom_bar(stat = "identity", position = "dodge") +
-  ggtitle("Bottom 10 European Restaurants based on Service Rating") +
+  ggtitle("Bottom 10 European Restaurants based on Value Rating") +
   xlab("Restaurant") +
   ylab("Value Rating") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # Looking at the Flush restaurants
-european_restaurants |>
+european_cuisine |>
   filter(restaurant_name == "Flunch") |>
-  select(city, food_rating, service_rating, value_rating) |>
+  select(restaurant_name, city, food_rating, service_rating, value_rating, avg_rating) |>
+  arrange(desc(food_rating), desc(service_rating), desc(value_rating)) |>
   kable()
   
+# Price vs Average Rating
+ggplot(european_cuisine, aes(x = avg_price, y = avg_rating)) +
+  geom_point() +
+  labs(title = "Price vs Average Rating",
+       x = "Price",
+       y = "Average Rating") +
+  theme_minimal()
+
+####Maybe lot's of trip advisor reviews are mostly withing resasonable budget,
+####or budget-frfiendly food
+
+# Expensive and avr rating
+most_expensive <- european_cuisine %>%
+  arrange(desc(avg_price)) %>%
+  head(5)
+ggplot(most_expensive, aes(x = reorder(restaurant_name, -avg_price), y = avg_price, fill = avg_rating)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.7) +
+  labs(title = "Most Expensive Restaurants: Price and Average Rating",
+       x = "Restaurant",
+       y = "Price",
+       fill = "Average Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 
 # Combine the top 10 restaurants for each category into a single data frame
 #top_restaurants <- bind_rows(
