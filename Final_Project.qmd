@@ -341,6 +341,47 @@ visualization_data <- na.omit(data_final)
 plot_ly(visualization_data, x = ~longitude, y = ~latitude, text = ~city, type = 'scatter', mode = 'markers') %>%
   layout(title = "Cities Interactive Scatter Plot", xaxis = list(title = "Longitude"), yaxis = list(title = "Latitude"))
 ```
-Through this latitude vs longitude plot, it is appreciated that most restaurants are located in France. This reinforces the univariate analysis that showed France having the highest amount of restaurants in the dataset. 
+Through this latitude vs longitude plot, it is appreciated that most restaurants are located in France. This reinforces the univariate analysis that indicated France having the highest amount of restaurants in the dataset. 
 
+## Food Top and Bottom Ratings
+
+Since there are a lot observations, the plot will be complicated to read. Thus, to make the analysis more comprehensive, I decided to narrow the observations studied. Since most of the restaurants offer a cuisine in Europe, I decided to explore those restaurants to make the EDA more meaningful. 
+
+```{r}
+#| label: Narrow Europe Cuisine
+european_cuisine <- filter(data_final, cuisines == "Europe")
+```
+
+```{r}
+#| label: Food Top Ratings
+top_food_ratings <- european_cuisine |>
+  arrange(desc(food_rating)) |>
+  head(10)  
+
+ggplot(top_food_ratings, aes(x = restaurant_name, y = food_rating)) +
+  geom_bar(stat = "identity", color = "black", fill = "lightgreen") +
+  ggtitle("Top 10 European Restaurants based on Food Rating") +
+  xlab("Restaurant") +
+  ylab("Food Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+In this plot it is seen that the top 20 restaurants posses a a food rating of 5 out of 5. This means that the quality of the European cuisine is not only affordable, which was drawn from out previous section analysis, but also really tasteful. 
+
+Another interesting finding is that these restaurants with the top food ratings are French, which links with the overall trend of the high performance and presence of restaurants in France. 
+
+```{r}
+#| label: Lowest ratings
+bottom_food_ratings <- european_cuisine |>
+  arrange(food_rating) |>
+  head(10)
+
+ggplot(bottom_food_ratings, aes(x = restaurant_name, y = food_rating, fill = paste(restaurant_name, city))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  ggtitle("Bottom 10 European Restaurants based on Food Rating") +
+  xlab("Restaurant") +
+  ylab("Food Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+In this plot, it is appreciated that the most of the restaurants at the bottom, posses a low food rate of 2.0. The highest low food rate of 2.5 from a restaurant in Flunch chain. 
 
