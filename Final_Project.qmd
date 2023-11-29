@@ -310,3 +310,24 @@ ggplot(data_final, aes(x = special_diets)) +
 
 This plot shows that most of the restaurants on TripAdvisor do not offer special diets in their menus. However, there is some presence of vegetarian options. There is also a possibility that, for some restaurants, it was unknown, so it was registered as if they do not offer special diets. Thus, the impact of special diets can be inaccurate, not meaningful for this EDA.
 
+## For Cuisines
+
+```{r}
+# Replace NA and empty strings with "Unknown" before separating rows
+data_final$cuisines <- ifelse(is.na(data_final$cuisines) | data_final$cuisines == "" | tolower(data_final$cuisines) == "na", "Unknown", data_final$cuisines)
+
+# Split the cuisines variable into multiple rows and filter out "Unknown" values
+split_cuisines <- data_final %>%
+  separate_rows(cuisines, sep = ", ") %>%
+  filter(cuisines != "Unknown") %>%
+  mutate(cuisines = trimws(cuisines))
+
+# Plotting (assuming a simple bar plot)
+ggplot(split_cuisines, aes(x = cuisines)) +
+   geom_bar(fill = "lightyellow", color = "black") +
+  labs(title = "Cuisines Plot", x = "Cuisine", y = "Count")
+```
+
+In this plot it is seen that most of the restaurants, more than 10000 restaurants, offer a European cuisine. This make sense, since the restaurants I am exploring are located in different European cities.
+
+There is a moderate presence of restaurants, around 1875 ones, that work as bars too. Asian cuisine is also offered by around 1250 restaurants. African and North American cuisines have a lower presence in the menus of the European restaurants. Fusion and South American cuisine are barely offer in those restaurants. Oceania cuisine has the lowest presence in the restaurants within these database. 
