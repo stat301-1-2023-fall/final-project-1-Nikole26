@@ -331,3 +331,16 @@ ggplot(split_cuisines, aes(x = cuisines)) +
 In this plot it is seen that most of the restaurants, more than 10000 restaurants, offer a European cuisine. This make sense, since the restaurants I am exploring are located in different European cities.
 
 There is a moderate presence of restaurants, around 1875 ones, that work as bars too. Asian cuisine is also offered by around 1250 restaurants. African and North American cuisines have a lower presence in the menus of the European restaurants. Fusion and South American cuisine are barely offer in those restaurants. Oceania cuisine has the lowest presence in the restaurants within these database. 
+
+# Multivariate Analysis
+
+## Location of the restaurants
+```{r}
+# Latitude vs longitude
+visualization_data <- na.omit(data_final)
+plot_ly(visualization_data, x = ~longitude, y = ~latitude, text = ~city, type = 'scatter', mode = 'markers') %>%
+  layout(title = "Cities Interactive Scatter Plot", xaxis = list(title = "Longitude"), yaxis = list(title = "Latitude"))
+```
+Through this latitude vs longitude plot, it is appreciated that most restaurants are located in France. This reinforces the univariate analysis that showed France having the highest amount of restaurants in the dataset. 
+
+
