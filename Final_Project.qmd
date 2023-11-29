@@ -342,7 +342,6 @@ plot_ly(visualization_data, x = ~longitude, y = ~latitude, text = ~city, type = 
   layout(title = "Cities Interactive Scatter Plot", xaxis = list(title = "Longitude"), yaxis = list(title = "Latitude"))
 ```
 
-
 Through this latitude vs longitude plot, it is appreciated that most restaurants are located in France. This reinforces the univariate analysis that indicated France having the highest amount of restaurants in the dataset. 
 
 ## Food Top and Bottom Ratings
@@ -544,7 +543,7 @@ In the table above, it is seen that costumers can find places where they get goo
 
 # Exploring France a bit deeper
 
-Along this EDA, France had a strong presence since when looking at prices and ratings the top and bottom restaurants, French restaurants appeared. Thus, I decided to particularly explore at restaurants located in France. 
+Along this EDA, France had a strong presence since most of the restaurants are located there. Also, when looking at prices and ratings the top and bottom restaurants, French restaurants appeared. Thus, I decided to particularly explore at restaurants located in France. 
 
 ## Price level and Ratings
 ```{r}
@@ -557,13 +556,16 @@ ggplot(french_restaurants, aes(x = price_level)) +
        x = "Price Level",
        y = "Number of Restaurants") 
 ```
-Through this bar plot, it is possible to see that most of the restaurants are 
 
 ```{r}
 top_rated_restaurants <- french_restaurants[french_restaurants$avg_rating == max(french_restaurants$avg_rating), ]
 kable(top_rated_restaurants[, c("restaurant_name", "avg_rating", "price_level")], format = "html") |>
   kable_styling()
 ```
+
+Through this bar plot, it is evident that the majority of French restaurants fall into the mid-range category. This suggests that French restaurants offer a variety of services and cuisines that are affordable for consumers. Moreover, their service remains excellent, as indicated in the table, which shows that some top-rated restaurants with an average rating of 5 also belong to the mid-range category.
+
+Additionally, the plot suggests that French restaurants cater to diverse customer budgets. There are upscale, expensive restaurants for special occasions, as well as mid-range and affordable options for casual or informal gatherings. Regardless of the price level customers are seeking, they can still find restaurants with great food, value, and service, as illustrated in the table listing restaurants from cheap to expensive, all with an average rating of 5.
 
 ## How many french restaurants have an award?
 
@@ -590,3 +592,6 @@ ggplot(awards_data, aes(x = "", y = percentage, fill = category)) +
   geom_text(aes(label = sprintf("%.1f%%", percentage)), position = position_stack(vjust = 0.5), size = 4)
 ```
 
+In this pie chart, it is evident that the majority of French restaurants have received awards. This underscores the excellent culinary service that French restaurants offer. These accolades not only enhance their reputation but also contribute to the higher costs associated with some French restaurants. Winning awards can impact not only the customer experience but also the pricing of their menus.
+
+# Conclusion
