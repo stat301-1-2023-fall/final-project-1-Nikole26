@@ -347,6 +347,8 @@ Through this latitude vs longitude plot, it is appreciated that most restaurants
 
 Since there are a lot observations, the plot will be complicated to read. Thus, to make the analysis more comprehensive, I decided to narrow the observations studied. Since most of the restaurants offer a cuisine in Europe, I decided to explore those restaurants to make the EDA more meaningful. 
 
+This filtered dataset will be used to explore the food, service and value ratings in this section.
+
 ```{r}
 #| label: Narrow Europe Cuisine
 european_cuisine <- filter(data_final, cuisines == "Europe")
@@ -383,5 +385,88 @@ ggplot(bottom_food_ratings, aes(x = restaurant_name, y = food_rating, fill = pas
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-In this plot, it is appreciated that the most of the restaurants at the bottom, posses a low food rate of 2.0. The highest low food rate of 2.5 from a restaurant in Flunch chain. 
+In this plot, it is appreciated that the most of the restaurants at the bottom, posses a low food rate of 2.0. There is a slightly higher food rate of 2.5 from a restaurant from the Flunch chain. The lowest food rate is 1.5 from Don & Donna. 
+
+```{r}
+bottom_food_ratings |>
+  filter(restaurant_name %in% c("Flunch", "Don & Donna")) |>
+  select(restaurant_name, country, food_rating, avg_price, price_level) |>
+  kable()
+```
+It is interesting that the Don & Donna restaurant located in Greece, despite a low food rating, their price level is still mark as expensive. While, the French restaurant chain like Flunch, with food rating between 2.5 and 5, their price level is usually cheap, with a price around 15 euros.
+
+## Service Top and Bottom Ratings
+
+```{r}
+top_service_rating <- european_cuisine |>
+  arrange(desc(service_rating)) |>
+  head(10)  
+
+ggplot(top_service_rating, aes(x = restaurant_name, y = service_rating)) +
+  geom_bar(stat = "identity", color = "black", fill = "lightgreen") +
+  ggtitle("Top 10 European Restaurants based on Service Rating") +
+  xlab("Restaurant") +
+  ylab("Service Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+This plot shows that the restaurants that has the highest service rating 5 out of 5 are French. 
+
+```{r}
+bottom_service_rating <- european_cuisine |>
+  arrange(service_rating) |>
+  head(10)
+
+ggplot(bottom_service_rating, aes(x = reorder(restaurant_name, -service_rating), y = service_rating)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black", fill = "lightgreen") +
+  ggtitle("Bottom 10 European Restaurants based on Service Rating") +
+  xlab("Restaurant") +
+  ylab("Service Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+This plot shows the restaurants with the lowest service rating. The most common lowest rating is 2.5, followed by 2.0. The lowest service rating belongs to Don & Donna, which also has the lowest food rating as seen previously. 
+
+The Flunch chain restaurant appears again, meaning that they do not only have the a low food rating, but also a low service rating. 
+
+## Value Top and Bottom Ratings
+
+```{r}
+top_value_rating <- european_cuisine |>
+  arrange(desc(value_rating)) |>
+  head(10)  
+
+ggplot(top_value_rating, aes(x = restaurant_name, y = value_rating)) +
+  geom_bar(stat = "identity", color = "black", fill = "lightgreen") +
+  ggtitle("Top 10 European Restaurants based on Value Rating") +
+  xlab("Restaurant") +
+  ylab("Value Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+Through this plot, it is seen that the restaurants that has the highest value rating, 5 out of 5, are French.
+
+```{r}
+bottom_value_rating <- european_cuisine |>
+  arrange(value_rating) |>
+  head(10)
+
+ggplot(bottom_value_rating, aes(x = reorder(restaurant_name, -value_rating), y = value_rating)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black", fill = "lightgreen") +
+  ggtitle("Bottom 10 European Restaurants based on Value Rating") +
+  xlab("Restaurant") +
+  ylab("Value Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+This plot shows that the restaurants with the lowest value rating is mostly 2. Something particular from this plot is that the Don & Donna restaurant appears again at the bottom. Looking at all the ratings of Don & Donna as explored before:
+
+```{r}
+european_cuisine |>
+  filter(restaurant_name == "Don & Donna") |>
+  select(restaurant_name, food_rating, service_rating, value_rating, avg_price, price_level) |>
+  kable()
+```
+
+Thus it is possible to infer that the restaurant, Don & Donna is the worst one in this dataset base on the food, service and value rating. Still, it is interesting to see that even though their rating is bad, their prices are still expensive around 50 euros. This lead to think that maybe Greek restaurants are usually expensive regardless of their rating. 
+
+## Exploring France a bit deeper
+
+
 
