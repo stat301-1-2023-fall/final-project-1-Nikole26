@@ -48,7 +48,7 @@ data <- read_csv("data/tripadvisor_european_restaurants.csv")
 
 
 
-# Overview of te data
+# Data Overview
 
 This dataset was acquired through scraping TripAdvisor (TA), a well-known travel website, for its restaurant information. The dataset contains a pool of 1,083,397 restaurants across European countries. There are 42 variables, among these variables, 25 are categorical and 17 are numericals. The raw datasets for Europe's largest cities were then carefully selected and combined for further examination.
 
@@ -183,4 +183,130 @@ In the process of cleaning the data, various essential string manipulation, func
 
 • Data Filtering and Handling Missing Values
 
+# Starting of EDA 
+
+## Univariate Analysis
+
+In order to find patterns or unusual trends, I started analyzing at each variable in the dataset.
+
+### For Restaurants
+Considering there are too many observations, to facilitate my exploration process I decided to look at the 10 most common restaurants. 
+
+```{r}
+#| label: Restaurant  
+top_restaurants <- data_final %>%
+  count(restaurant_name) %>%
+  top_n(10, wt = n)  
+
+# Filter the data for the top restaurants
+data_top <- data_final %>%
+  filter(restaurant_name %in% top_restaurants$restaurant_name)
+
+# Bar plot for the top restaurants
+ggplot(data_top, aes(x = restaurant_name)) +
+  geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Top Restaurants by Frequency",
+       x = "Restaurant Names",
+       y = "Count") 
+```
+
+Through this bar plot, it is possible to see that there are a number of restaurants for the same restaurant name. Thus, looking back at the data I realized that even though those restaurants have the same name, there are all in different cities. Taking as an example, Flunch:
+
+```{r}
+data_final |>
+  filter(restaurant_name == "Flunch") |>
+  select(restaurant_name, city) |>
+  kable()
+```
+
+
+Thus, I realized that those restaurants conformed a chain and that's why there a more than one of them for those restaurants. Something particular interesting is that all the top restaurants chains are French. The restaurant chain with the highest amount of restaurants is Leon de Bruxelles.
+
+### For Average Rating
+
+```{r}
+ggplot(data_final, aes(x = avg_rating)) +
+  geom_histogram(binwidth = 0.5, fill = "lightyellow", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Average Ratings",
+       x = "Average Rating",
+       y = "Frequency") 
+```
+
+Through this plot it is seen the European restaurants in those 31 different countries on TripAdvisor, have a high rating, approximately between 4 to 4.8. This could suggest that the average quality offered in European restaurants is really good. This would be deeper study in the multivariate section. 
+
+### For the Open Days Per Week
+```{r}
+ggplot(data_final, aes(x = open_days_per_week)) +
+  geom_bar(position = "dodge", stat = "count", fill = "lightyellow", color = "black") +
+  labs(title = "Count of Open Days per Week",
+       x = "Number of Days opened per Week",
+       y = "Count") +
+  scale_x_continuous(breaks = 1:7, labels = as.character(1:7)) +
+  theme_minimal()
+
+```
+
+In this plot it is possible to see that most of the restaurants are open during the seven days of the week. That is followed by six and five days per week. That makes sense since restaurants should generally be open for five days or more in order to make profit. 
+
+However, there are some restaurants that are open for 4 days or less, which is atypical to see. The impact of this low openings amount would be explored in the multivariate section. 
+
+### For Country
+
+```{r}
+ggplot(data_final, aes(x = country)) +
+  geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Distribution of Countries",
+       x = "Country",
+       y = "Count") 
+```
+
+This plot displays the number of restaurants per country. France has the highest number of restaurants in this dataset, which could potentially explain why the top 10 restaurants chain are French. Croatia and Finland are the countries with the least number of restaurants on TripAdvisor.
+France will be explore deeper in a later section. 
+
+### For Average Price
+
+```{r}
+ggplot(data_final, aes(x = avg_price)) +
+  geom_histogram(bins = 50, fill = "lightyellow", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Average Price",
+       x = "Average Price",
+       y = "Frequency") 
+```
+
+```{r}
+ggplot(data_final, aes(x = 1, y = avg_price)) +
+  geom_boxplot(fill = "lightyellow", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Average Price",
+       x = "",
+       y = "Average Price") +
+  theme_minimal()
+```
+
+This histogram is right-skewed, with a mode around 20 to 30 euros. This could indicate that the majority of European restaurants that appear on TripAdvisor are affordable and generally do not exceed 50 euros. However, there are a some exceptions, which are seen through the outlines in the boxplot with prices ranging from 100 euros to 500 euros. 
+
+### For Price Level
+
+```{r}
+ggplot(data_final, aes(x = price_level)) +
+  geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Price Levels",
+       x = "Price Level",
+       y = "Count")
+```
+
+It is evident in this bar plot that most of the restaurants are mid-range, aligning with what was observed in the average price plot above. This reinforces the idea that the food offered in the majority of the restaurants in this dataset is affordable and potentially budget-friendly.
+
+### For special Diets
+
+```{r}
+ggplot(data_final, aes(x = special_diets)) +
+  geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Special Diets",
+       x = "Special Diets",
+       y = "Count")
+```
+
+This plot shows that most of the restaurants on TripAdvisor do not offer special diets in their menus. However, there is some presence of vegetarian options. There is also a possibility that, for some restaurants, it was unknown, so it was registered as if they do not offer special diets. Thus, the impact of special diets can be inaccurate, not meaningful for this EDA.
 
