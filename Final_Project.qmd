@@ -1,5 +1,5 @@
 ---
-title: "Exploring European Restaurants from Tripadvisor"
+title: "Exploring European Restaurants on Tripadvisor"
 subtitle: |
   | Final Project 
   | Data Science 1 with R (STAT 301-1)
@@ -42,7 +42,7 @@ library(DT)
 
 ```{r}
 #| label: Load packages
-data_final <- read_rds("data/data_final.rds")
+data <- read_rds("data/data_final.rds")
 ```
 
 # Introduction
@@ -89,12 +89,12 @@ Considering there are too many observations, to facilitate my exploration proces
 ```{r}
 #| label: fig-top-restaurant  
 #| fig-cap: Distribution of Average Ratings
-top_restaurants <- data_final %>%
+top_restaurants <- data %>%
   count(restaurant_name) %>%
   top_n(10, wt = n)  
 
 # Filter the data for the top restaurants
-data_top <- data_final %>%
+data_top <- data %>%
   filter(restaurant_name %in% top_restaurants$restaurant_name)
 
 # Bar plot for the top restaurants
@@ -111,7 +111,7 @@ In @fig-top-restaurant, it is appreciated that there are a number of restaurants
 ```{r}
 #| label: fig-table-1
 #| fig-cap: Flunch Chain Restaurants Table
-data_final |>
+data |>
   filter(restaurant_name == "Flunch") |>
   select(restaurant_name, city) |>
   datatable()
@@ -124,7 +124,7 @@ Thus, through @fig-table-1, I realized that those restaurants conformed a chain 
 ```{r}
 #| label: fig-average-rating
 #| fig-cap: Distribution of Average Ratings
-ggplot(data_final, aes(x = avg_rating)) +
+ggplot(data, aes(x = avg_rating)) +
   geom_histogram(binwidth = 0.5, fill = "lightyellow", color = "black", alpha = 0.7) +
   labs(title = "Distribution of Average Ratings",
        x = "Average Rating",
@@ -137,7 +137,7 @@ ggplot(data_final, aes(x = avg_rating)) +
 ```{r}
 #| label: fig-open-days-per-week
 #| fig-cap: Count of Open Days per Week
-ggplot(data_final, aes(x = open_days_per_week)) +
+ggplot(data, aes(x = open_days_per_week)) +
   geom_bar(position = "dodge", stat = "count", fill = "lightyellow", color = "black") +
   labs(title = "Count of Open Days per Week",
        x = "Number of Days opened per Week",
@@ -156,7 +156,7 @@ However, there are some restaurants that are open for 4 days or less, which is a
 ```{r}
 #| label: fig-country-plot
 #| fig-cap: Restaurant Locations among different European countries
-ggplot(data_final, aes(x = country)) +
+ggplot(data, aes(x = country)) +
   geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(title = "Restaurant Locations",
@@ -172,7 +172,7 @@ France will be explore deeper in a later section.
 ```{r}
 #| label: fig-avg-price
 #| fig-cap: Histogram-Distribution of Average Price
-ggplot(data_final, aes(x = avg_price)) +
+ggplot(data, aes(x = avg_price)) +
   geom_histogram(bins = 50, fill = "lightyellow", color = "black", alpha = 0.7) +
   labs(title = "Distribution of Average Price",
        x = "Average Price",
@@ -184,7 +184,7 @@ ggplot(data_final, aes(x = avg_price)) +
 ```{r}
 #| label: fig-avg-price-2
 #| fig-cap: Box Plot-Distribution of Average Price
-ggplot(data_final, aes(x = 1, y = avg_price)) +
+ggplot(data, aes(x = 1, y = avg_price)) +
   geom_boxplot(fill = "lightyellow", color = "black", alpha = 0.7) +
   labs(title = "Distribution of Average Price",
        x = "",
@@ -199,7 +199,7 @@ ggplot(data_final, aes(x = 1, y = avg_price)) +
 ```{r}
 #| label: fig-price-level
 #| fig-cap: Distribution of Price Levels
-ggplot(data_final, aes(x = price_level)) +
+ggplot(data, aes(x = price_level)) +
   geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
   labs(title = "Distribution of Price Levels",
        x = "Price Level",
@@ -213,7 +213,7 @@ It is evident in @fig-price-level that most of the restaurants are mid-range, al
 ```{r}
 #| label: fig-special-diets
 #| fig-cap: Distribution of Special Diets
-ggplot(data_final, aes(x = special_diets)) +
+ggplot(data, aes(x = special_diets)) +
   geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
   labs(title = "Distribution of Special Diets",
        x = "Special Diets",
@@ -227,10 +227,10 @@ ggplot(data_final, aes(x = special_diets)) +
 ```{r}
 #| label: Rearraging NA values
 # Replace NA and empty strings with "Unknown" before separating rows
-data_final$cuisines <- ifelse(is.na(data_final$cuisines) | data_final$cuisines == "" | tolower(data_final$cuisines) == "na", "Unknown", data_final$cuisines)
+data$cuisines <- ifelse(is.na(data$cuisines) | data$cuisines == "" | tolower(data$cuisines) == "na", "Unknown", data$cuisines)
 
 # Split the cuisines variable into multiple rows and filter out "Unknown" values
-split_cuisines <- data_final %>%
+split_cuisines <- data %>%
   separate_rows(cuisines, sep = ", ") %>%
   filter(cuisines != "Unknown") %>%
   mutate(cuisines = trimws(cuisines))
@@ -256,7 +256,7 @@ There is a moderate presence of restaurants, around 1875 ones, that work as bars
 #| label: fig-restaurants-location
 #| fig-cap: Cities Interactive Scatter Plot
 # Latitude vs longitude
-visualization_data <- na.omit(data_final)
+visualization_data <- na.omit(data)
 plot_ly(visualization_data, x = ~longitude, y = ~latitude, text = ~city, type = 'scatter', mode = 'markers') %>%
   layout(title = "Cities Interactive Scatter Plot", xaxis = list(title = "Longitude"), yaxis = list(title = "Latitude"))
 ```
@@ -271,7 +271,7 @@ This filtered dataset will be used to explore the food, service and value rating
 
 ```{r}
 #| label: Narrow Europe Cuisine
-european_cuisine <- filter(data_final, cuisines == "Europe")
+european_cuisine <- filter(data, cuisines == "Europe")
 ```
 
 ```{r}
@@ -523,7 +523,7 @@ Along this EDA, France had a strong presence since most of the restaurants are l
 ```{r}
 #| label: fig-price-level-ratings
 #| fig-cap: Distribution of French Restaurants by Price Level
-french_restaurants <- data_final |>
+french_restaurants <- data |>
   filter(country == "France")
 
 ggplot(french_restaurants, aes(x = price_level)) +

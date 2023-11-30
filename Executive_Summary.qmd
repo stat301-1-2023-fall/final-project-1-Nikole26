@@ -1,0 +1,53 @@
+---
+title: "Executive Summary: Exploring European Restaurants on Tripadvisor"
+subtitle: |
+  | Final Project 
+  | Data Science 1 with R (STAT 301-1)
+author: "Nikole Montero Cervantes"
+date: today
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+    
+execute:
+  echo: false
+  warning: false
+
+from: markdown+emoji 
+---
+
+::: {.callout-tip icon=false}
+
+## Github Repo Link
+
+[https://github.com/stat301-1-2023-fall/final-project-1-Nikole26.git](https://github.com/stat301-1-2023-fall/final-project-1-Nikole26.git)
+
+:::
+
+
+```{r}
+#| label: Loading packages
+library(tidyverse)
+library(skimr)
+library(stringr)
+library(ggplot2)
+library(plotly)
+library(tidyr)
+library(knitr)
+library(ggrepel)
+library(kableExtra)
+library(DT)
+```
+
+```{r}
+#| label: Load packages
+data <- read_rds("data/data_final.rds")
+```
+
+# Introduction
+
+# EDA's Highlights and Main Findings 
+
+# Opportunity for future research
