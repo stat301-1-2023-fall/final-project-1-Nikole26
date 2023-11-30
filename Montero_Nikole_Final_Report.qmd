@@ -488,8 +488,10 @@ european_cuisine |>
   arrange(desc(food_rating), desc(service_rating), desc(value_rating)) |>
   datatable()
 ```
+
 <brp>
 <brp>
+
 ```{r}
 #| label: fig-table-french-rest
 #| fig-cap: Table of French Restaurants with the lowest food, service and value rating

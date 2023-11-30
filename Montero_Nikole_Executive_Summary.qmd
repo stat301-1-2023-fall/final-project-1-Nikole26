@@ -79,6 +79,7 @@ ggplot(data, aes(x = price_level)) +
 ```
 
 ## Culinary Dominance of France
+
 * France's remarkable culinary dominance, evident in both the quantity and top rankings of its restaurants, serves as a central theme.
 
 * Surprising diversity in French restaurants' price levels, spanning from budget-friendly to upscale, with consistent high and above-average ratings.
@@ -129,4 +130,4 @@ ggplot(awards_data, aes(x = "", y = percentage, fill = category)) +
 
 * Investigating the correlation between specific cuisines and higher ratings, along with analyzing the broader implications of awards on customer traffic, profitability, and industry recognition, holds promise for further insights into the European restaurant industry.
 
-Together, these research directions hold the promise of advancing our understanding of the intricacies and dynamics that shape the European restaurant industry.
+Together, these research directions hold the promise of advancing our understanding of the intricacies and dynamics that shape the European restaurant industry. 
