@@ -47,7 +47,7 @@ data <- read_rds("data/data_cleaned.rds")
 
 # Introduction
 
-Having previously traversed around Europe, my fascination with the continent lies not only in its rich cultural tapestry but, more prominently, in its diverse and delectable cuisine. As a seasoned traveler, I've embarked on culinary adventures, navigating among European restaurants with a reliance on recommendations and reviews sourced from platforms such as TripAdvisor.
+Having previously traversed around Europe, my fascination with the continent lies not only in its rich cultural tapestry but, more prominently, in its diverse and delectable cuisine. As a seasoned traveler, I've embarked on culinary adventures, navigating among European restaurants relying on recommendations and reviews from platforms like TripAdvisor.
 
 Motivated by my own experiences, I became intrigued by the complex interplay of elements that elevate a restaurant from ordinary to exceptional. The quest for exceptional dining experiences for budget-conscious travelers, without compromising on the quality of gastronomic delights, emerged as a compelling challenge. Thus, I found myself driven to explore the nuances of locating affordable restaurants that deliver outstanding food—an exploration intended to enhance travel experiences for individuals like myself.
 
@@ -55,7 +55,7 @@ This dataset^[Leone, S. (2020). TripAdvisor European restaurants [Data set]. Kag
 
 # Data Overview & Quality
 
-The dataset contains a pool of 1,083,397 restaurants across European countries. There are 42 variables, among these variables, 25 are categorical and 17 are numericals. 
+The dataset contains a pool of 1,083,397 restaurants across European countries. There are 42 variables, among these variables, 25 are categorical and 17 are numerical. 
 
 The primary concern for this data analysis revolves around the existence of missing values in different variables. This issue has the potential to compromise the accuracy of the results, resulting in misleading interpretations. To address this, the data will undergo an intensive cleaning process to ensure that the Exploratory Data Analysis (EDA) yields meaningful insights.
 
@@ -119,7 +119,7 @@ data |>
   datatable()
 ```
 
-Thus, through @fig-table-1, I realized that those restaurants conformed a chain and that's why there a more than one of them for those restaurants. Something particular interesting is that all the top restaurants chains are French. The restaurant chain with the highest amount of restaurants is Leon de Bruxelles.
+Thus, through @fig-table-1, I realized that those restaurants conformed a chain and that's why there is more than one of them for those restaurants. Something particular interesting is that all the top restaurants chains are French. The restaurant chain with the highest amount of restaurants is Leon de Bruxelles.
 
 ### For Average Rating
 
@@ -196,7 +196,7 @@ ggplot(data, aes(x = 1, y = avg_price)) +
 
 @fig-avg-price shows a histogram is right-skewed, with a mode around 20 to 30 euros. This could indicate that the majority of European restaurants that appear on TripAdvisor are affordable and generally do not exceed 50 euros. However, there are a some exceptions, which are seen through the outlines in @fig-avg-price-2 with prices ranging from 100 euros to 500 euros. 
 
-### For Price Level
+### For Price Levels
 
 ```{r}
 #| label: fig-price-level
@@ -204,7 +204,7 @@ ggplot(data, aes(x = 1, y = avg_price)) +
 ggplot(data, aes(x = price_level)) +
   geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
   labs(title = "Distribution of Price Levels",
-       x = "Price Level",
+       x = "Price Levels",
        y = "Count")
 ```
 
@@ -256,7 +256,7 @@ There is a moderate presence of restaurants, around 1875 ones, that work as bars
 ### Location of the restaurants
 ```{r}
 #| label: fig-restaurants-location
-#| fig-cap: Cities Interactive Scatter Plot
+#| fig-cap: Cities Interactive Scatter Plot - Shows all the locations of the restaurants in the dataset based on their latitude and longitude
 # Latitude vs longitude
 visualization_data <- na.omit(data)
 plot_ly(visualization_data, x = ~longitude, y = ~latitude, text = ~city, type = 'scatter', mode = 'markers') %>%
@@ -269,7 +269,7 @@ Through @fig-restaurants-location, it is appreciated that most restaurants are l
 
 Since there are a lot observations, the plot will be complicated to read. Thus, to make the analysis more comprehensive, I decided to narrow the observations studied. Since most of the restaurants offer a cuisine in Europe, I decided to explore those restaurants to make the EDA more meaningful. 
 
-This filtered dataset will be used to explore the food, service and value ratings in this section.
+I will use this filtered dataset to explore the food, service, and value ratings in this section.
 
 ```{r}
 #| label: Narrow Europe Cuisine
@@ -547,7 +547,7 @@ top_rated_restaurants |>
   select("restaurant_name", "avg_rating", "price_level") |>
   datatable()
 ```
-Through @fig-price-level-ratings, it is evident that the majority of French restaurants fall into the mid-range category. This suggests that French restaurants offer a variety of services and cuisines that are affordable for consumers. Moreover, their service remains excellent, as indicated in @fig-price-level-top-ratings, which shows that some top-rated restaurants with an average rating of 5 also belong to the mid-range category.
+Through @fig-price-level-ratings, it is evident that the majority of French restaurants fall into the mid-range category. This suggests that French restaurants offer a variety of services and cuisines that are affordable for consumers. As indicated as well in @fig-price-level-top-ratings, where some top-rated restaurants with an average rating of 5 also fall into the mid-range category."
 
 Additionally, @fig-price-level-ratings suggests that French restaurants cater to diverse customer budgets. There are upscale, expensive restaurants for special occasions, as well as mid-range and affordable options for casual or informal gatherings. Regardless of the price level customers are seeking, they can still find restaurants with great food, value, and service, as illustrated in @fig-price-level-top-ratings, listing restaurants from cheap to expensive, all with an average rating of 5.
 
