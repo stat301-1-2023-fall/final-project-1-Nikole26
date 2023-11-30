@@ -154,7 +154,8 @@ data_tidy_2$top_tags <- lapply(data_tidy_2$top_tags, function(tags) {
                    "Eastern European", "Moroccan", "Armenian", "Swiss", "Spanish",
                    "Catalan")] <- "Europe"
   
-  tags[tags %in% c("Egyptian", "Egypt", "African", "Algerian", "Contemporary")] <- "Africa"
+  tags[tags %in% c("Egyptian", "Egypt", "African", "Algerian", "Contemporary",
+                   "Arabic", "Tunisian")] <- "Africa"
   
   tags[tags %in% c("Chilean", "Venezuelan", "Peruvian", "South American",
                    "Argentinian", "Latin", "Brazilian")] <- "South America"
@@ -162,12 +163,13 @@ data_tidy_2$top_tags <- lapply(data_tidy_2$top_tags, function(tags) {
   tags[tags %in% c("Mexican", "Central American", "Native American", "Cuban", "Latin",
                    "Caribbean", "Canadian", "American")] <- "North America"
   
-  tags[tags %in% c("New Zealand", "Polynesian")] <- "Oceania"
+  tags[tags %in% c("New Zealand", "Polynesian", "Australian")] <- "Oceania"
   
   tags <- tags[!(tags %in% c("Delivery Only", "Dinner", "Diner", "Healthy", "Barbecue", "Caucasian",
                              "Quick Bites", "Cajun & Creole", "International", "Deli", "Dessert",
                              "Bakeries", "Fast food", "Cafe", "Street Food", "Seafood", "Gastropub", 
-                             "Dining bars", "Grill", "Steakhouse"))]
+                             "Dining bars", "Grill", "Steakhouse", "Beer restaurants",
+                             "Halal", "Soups", "Speciality Food Market"))]
   
   if (length(tags) == 0) {
     tags <- NA
@@ -184,8 +186,8 @@ rows_NA <- data_tidy_2 |>
   summarise(across(everything(), ~sum(is.na(.))))
 
 data_tidy_3 <- select(data_tidy_2, -address, -original_location, 
-                             -keywords, -features, -cuisines, -popularity_detailed, 
-                             -popularity_generic, -price_range, -original_open_hours)
+                      -keywords, -features, -cuisines, -popularity_detailed, 
+                      -popularity_generic, -price_range, -original_open_hours)
 
 ## Seeing Variables with most NA values
 data_tidy_3[rowSums(is.na(data_tidy_3)) > 35, ]
@@ -208,7 +210,14 @@ rows_NA_3 <- data_final |>
   summarise(across(everything(), ~sum(is.na(.))))
 
 data_final <- data_final |>
-  rename(cuisines = top_tags)
+  rename(cuisines = top_tags,
+         food_rating = food,
+         value_rating = value,
+         service_rating = service)
+
+# Saving Data final as RDS
+write_rds(data_final, "~/stat301-1/projects/final-project-1-Nikole26/data/data_cleaned.rds")
+
 
 # Saving table-----------------
 missing_summary <- data_tidy_4 %>%
@@ -224,15 +233,3 @@ missing_table <- gt(missing_summary) %>%
 
 # Print the gt table
 gtsave(gt_table, file = "figures/missingness_table.png")
-
-
-#data_trying_1 <- data_trying_1 |>
-#  mutate(cuisines = trimws(cuisines)) |>
-#  separate_rows(meals, sep = ", ") |>
-#  mutate(cuisines_present = 1) |>
-#  pivot_wider(names_from = cuisines, values_from = cuisines_present, values_fill = NA)
-
-#restaurants_tidy_3 <- restaurants_tidy %>%
-#  unnest(top_tags) %>%
-#  mutate(tag_present = 1) %>% 
-#  pivot_wider(names_from = top_tags, values_from = tag_present, values_fill = 0) 

@@ -36,18 +36,95 @@ library(ggplot2)
 library(plotly)
 library(tidyr)
 library(knitr)
-library(ggrepel)
+library(stringi)
 library(kableExtra)
 library(DT)
 ```
 
 ```{r}
 #| label: Load packages
-data <- read_rds("data/data_final.rds")
+data <- read_rds("data/data_cleaned.rds")
 ```
 
 # Introduction
 
-# EDA's Highlights and Main Findings 
+Through an Exploratory Data Analysis (EDA) of a dataset regarding restaurants in different European countries on TripAdvisor, the main insights, findings and future recommendation for research are provided in this report. 
+
+# Main Insights and Findings
+
+## Complexity of data wrangling
+
+* The dataset exhibited significant messiness, characterized by inconsistent formats, duplicate entries, irregularities and a substantial number of missing values. 
+
+* The data underwent intricate string manipulation, numeric extraction, the implementation of functions and other tools to clean and enhance its structure, ensuring optimal readiness for the EDA.
+
+## Widespread Excellence in Food and Service
+
+* European restaurants consistently achieve high ratings on platforms like TripAdvisor, emphasizing a widespread perception of excellence in food and service.
+
+* The majority of top-rated European restaurants, particularly in terms of food quality, are predominantly located in France.
+
+## Culinary Dominance of France
+* France's remarkable culinary dominance, evident in both the quantity and top rankings of its restaurants, serves as a central theme.
+
+* Surprising diversity in French restaurants' price levels, spanning from budget-friendly to upscale, with consistent high and above-average ratings.
+
+```{r}
+#| label: fig-price-level-ratings
+#| fig-cap: Distribution of French Restaurants by Price Level
+french_restaurants <- data |>
+  filter(country == "France")
+
+ggplot(french_restaurants, aes(x = price_level)) +
+  geom_bar(color = "black", fill = "orange") +
+  labs(title = "Distribution of French Restaurants by Price Level",
+       x = "Price Level",
+       y = "Number of Restaurants") 
+```
+
+## Redefining Success Metrics
+
+* Exploration of restaurant chains, exemplified by The Flunch, challenges assumptions about the correlation between the number of locations and higher ratings.
+
+* Studying Don & Donna restaurant exemplifies how perceived value extends beyond the monetary aspect, highlighting various factors considered by customers.
+
+* The majority of French restaurants had won an award. 
+
+
+```{r}
+#| label: French Restaurants Award
+french_restaurants <- data |>
+  filter(country == "France")
+
+french_restaurants <- french_restaurants %>%
+  mutate(awards_indicator = ifelse(!is.na(awards) & awards != "none", "yes", "no"))
+
+awards_count <- table(french_restaurants$awards_indicator)
+
+# Calculate percentages
+awards_percentage <- prop.table(awards_count) * 100
+
+# Create a data frame for ggplot
+awards_data <- data.frame(category = names(awards_percentage), percentage = as.numeric(awards_percentage))
+```
+
+```{r, out.width='100%', fig.align='right'}
+#| label: fig-french-rest-awards
+#| fig-cap: Distribution of French Restaurants with Awards
+ggplot(awards_data, aes(x = "", y = percentage, fill = category)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y") +
+  labs(title = "Distribution of French Restaurants with Awards") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  scale_fill_manual(values = c("yes" = "darkblue", "no" = "lightblue")) +  # Customize fill colors as needed
+  geom_text(aes(label = sprintf("%.1f%%", percentage)), position = position_stack(vjust = 0.5), size = 4)
+```
 
 # Opportunity for future research
+
+* Exploration of the impact of low open days per week on restaurant performance is identified as a potential future research avenue.
+
+* Investigating the correlation between specific cuisines and higher ratings, along with analyzing the broader implications of awards on customer traffic, profitability, and industry recognition, holds promise for further insights into the European restaurant industry.
+
+Together, these research directions hold the promise of advancing our understanding of the intricacies and dynamics that shape the European restaurant industry.

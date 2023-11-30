@@ -42,7 +42,7 @@ library(DT)
 
 ```{r}
 #| label: Load packages
-data <- read_rds("data/data_final.rds")
+data <- read_rds("data/data_cleaned.rds")
 ```
 
 # Introduction
@@ -51,7 +51,7 @@ Having previously traversed around Europe, my fascination with the continent lie
 
 Motivated by my own experiences, I became intrigued by the complex interplay of elements that elevate a restaurant from ordinary to exceptional. The quest for exceptional dining experiences for budget-conscious travelers, without compromising on the quality of gastronomic delights, emerged as a compelling challenge. Thus, I found myself driven to explore the nuances of locating affordable restaurants that deliver outstanding food—an exploration intended to enhance travel experiences for individuals like myself.
 
-This dataset^1 was formed through scraping TripAdvisor (TA), which I later obtained from Kaggle, a platform dedicated to data science.
+This dataset^[Leone, S. (2020). TripAdvisor European restaurants [Data set]. Kaggle. https://www.kaggle.com/datasets/stefanoleone992/tripadvisor-european-restaurants/code] was formed through scraping TripAdvisor (TA), which I later obtained from Kaggle, a platform dedicated to data science.
 
 # Data Overview & Quality
 
@@ -63,19 +63,21 @@ The primary concern for this data analysis revolves around the existence of miss
 
 In the process of cleaning the data, various essential string manipulation, functions and transformation techniques were employed using the dplyr and stringr packages in R. The dataset underwent a series of refinements to enhance its tidiness and facilitate downstream analyses. Key steps in the cleaning process include:
 
-• Variable Renaming
+* Variable Renaming
 
-• Creating and Modifying Variables
+* Creating and Modifying Variables
 
-• Handling Categorical Data
+* Handling Categorical Data
 
-• Text Processing
+* Text Processing
 
-• List Manipulation
+* List Manipulation
 
-• Numeric Extraction
+* Numeric Extraction
 
-• Data Filtering and Handling Missing Values
+* Data Filtering and Handling Missing Values
+
+This dataset now contains 11,784 observations and 31 variables. Among these variables, 12 are categorical, 1 is a list and 18 are numericals.
 
 # Starting of EDA 
 
@@ -289,7 +291,7 @@ ggplot(top_food_ratings, aes(x = restaurant_name, y = food_rating)) +
   ggtitle("Top 10 European Restaurants based on Food Rating") +
   xlab("Restaurant") +
   ylab("Food Rating") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 
 In @fig-food-top-ratings it is seen that the top 20 restaurants posses a a food rating of 5 out of 5. This means that the quality of the European cuisine is not only affordable, which was drawn from out previous section analysis, but also really tasteful. 
