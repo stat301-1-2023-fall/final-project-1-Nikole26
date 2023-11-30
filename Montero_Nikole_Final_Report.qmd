@@ -79,7 +79,7 @@ In the process of cleaning the data, various essential string manipulation, func
 
 This dataset now contains 11,784 observations and 31 variables. Among these variables, 12 are categorical, 1 is a list and 18 are numeric.
 
-# Starting of EDA 
+# Starting the EDA 
 
 ## Univariate Analysis
 
@@ -252,6 +252,8 @@ In @cuisines it is seen that most of the restaurants, more than 10000 restaurant
 There is a moderate presence of restaurants, around 1875 ones, that work as bars too. Asian cuisine is also offered by around 1250 restaurants. African and North American cuisines have a lower presence in the menus of the European restaurants. Fusion and South American cuisine are barely offer in those restaurants. Oceania cuisine has the lowest presence in the restaurants within these database. 
 
 ## Multivariate Analysis
+
+To continue the Exploratory Data Analysis (EDA) and further the analysis, I will explore the relationships between two or more variables to identify peculiar trends and patterns.
 
 ### Location of the restaurants
 ```{r}
