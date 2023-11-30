@@ -1,0 +1,597 @@
+---
+title: "Exploring European Restaurants on Tripadvisor"
+subtitle: |
+  | Final Project 
+  | Data Science 1 with R (STAT 301-1)
+author: "Nikole Montero Cervantes"
+date: today
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+    
+execute:
+  echo: false
+  warning: false
+
+from: markdown+emoji 
+---
+
+::: {.callout-tip icon=false}
+
+## Github Repo Link
+
+[https://github.com/stat301-1-2023-fall/final-project-1-Nikole26.git](https://github.com/stat301-1-2023-fall/final-project-1-Nikole26.git)
+
+:::
+
+```{r}
+#| label: Loading packages
+library(tidyverse)
+library(skimr)
+library(stringr)
+library(ggplot2)
+library(plotly)
+library(tidyr)
+library(knitr)
+library(ggrepel)
+library(kableExtra)
+library(DT)
+```
+
+```{r}
+#| label: Load packages
+data <- read_rds("data/data_cleaned.rds")
+```
+
+# Introduction
+
+Having previously traversed around Europe, my fascination with the continent lies not only in its rich cultural tapestry but, more prominently, in its diverse and delectable cuisine. As a seasoned traveler, I've embarked on culinary adventures, navigating among European restaurants with a reliance on recommendations and reviews sourced from platforms such as TripAdvisor.
+
+Motivated by my own experiences, I became intrigued by the complex interplay of elements that elevate a restaurant from ordinary to exceptional. The quest for exceptional dining experiences for budget-conscious travelers, without compromising on the quality of gastronomic delights, emerged as a compelling challenge. Thus, I found myself driven to explore the nuances of locating affordable restaurants that deliver outstanding food—an exploration intended to enhance travel experiences for individuals like myself.
+
+This dataset^[Leone, S. (2020). TripAdvisor European restaurants [Data set]. Kaggle. https://www.kaggle.com/datasets/stefanoleone992/tripadvisor-european-restaurants/code] was formed through scraping TripAdvisor (TA), which I later obtained from Kaggle, a platform dedicated to data science.
+
+# Data Overview & Quality
+
+The dataset contains a pool of 1,083,397 restaurants across European countries. There are 42 variables, among these variables, 25 are categorical and 17 are numericals. 
+
+The primary concern for this data analysis revolves around the existence of missing values in different variables. This issue has the potential to compromise the accuracy of the results, resulting in misleading interpretations. To address this, the data will undergo an intensive cleaning process to ensure that the Exploratory Data Analysis (EDA) yields meaningful insights.
+
+# Cleaning the data
+
+In the process of cleaning the data, various essential string manipulation, functions and transformation techniques were employed using the dplyr and stringr packages in R. The dataset underwent a series of refinements to enhance its tidiness and facilitate downstream analyses. Key steps in the cleaning process include:
+
+* Variable Renaming
+
+* Creating and Modifying Variables
+
+* Handling Categorical Data
+
+* Text Processing
+
+* List Manipulation
+
+* Numeric Extraction
+
+* Data Filtering and Handling Missing Values
+
+This dataset now contains 11,784 observations and 31 variables. Among these variables, 12 are categorical, 1 is a list and 18 are numericals.
+
+# Starting of EDA 
+
+## Univariate Analysis
+
+In order to find patterns or unusual trends, I started analyzing at each variable in the dataset.
+
+### For Restaurants
+Considering there are too many observations, to facilitate my exploration process I decided to look at the 10 most common restaurants. 
+
+```{r}
+#| label: fig-top-restaurant  
+#| fig-cap: Top Restaurants by Frequency
+top_restaurants <- data %>%
+  count(restaurant_name) %>%
+  top_n(10, wt = n)  
+
+# Filter the data for the top restaurants
+data_top <- data %>%
+  filter(restaurant_name %in% top_restaurants$restaurant_name)
+
+# Bar plot for the top restaurants
+ggplot(data_top, aes(x = restaurant_name)) +
+  geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Top Restaurants by Frequency",
+       x = "Restaurant Names",
+       y = "Count") 
+```
+
+In @fig-top-restaurant, it is appreciated that there are a number of restaurants for the same restaurant name. Thus, looking back at the data I realized that even though those restaurants have the same name, there are all in different cities. Taking as an example, Flunch:
+
+```{r}
+#| label: fig-table-1
+#| fig-cap: Flunch Chain Restaurants Table
+data |>
+  filter(restaurant_name == "Flunch") |>
+  select(restaurant_name, city) |>
+  datatable()
+```
+
+Thus, through @fig-table-1, I realized that those restaurants conformed a chain and that's why there a more than one of them for those restaurants. Something particular interesting is that all the top restaurants chains are French. The restaurant chain with the highest amount of restaurants is Leon de Bruxelles.
+
+### For Average Rating
+
+```{r}
+#| label: fig-average-rating
+#| fig-cap: Distribution of Average Ratings
+ggplot(data, aes(x = avg_rating)) +
+  geom_histogram(binwidth = 0.5, fill = "lightyellow", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Average Ratings",
+       x = "Average Rating",
+       y = "Frequency") 
+```
+
+@fig-average-rating shows that the European restaurants in those 31 different countries on TripAdvisor, have a high rating, approximately between 4 to 4.8. This could suggest that the average quality offered in European restaurants is reallp.y good. This would be deeper study in the multivariate section. 
+
+### For the Open Days Per Week
+```{r}
+#| label: fig-open-days-per-week
+#| fig-cap: Count of Open Days per Week
+ggplot(data, aes(x = open_days_per_week)) +
+  geom_bar(position = "dodge", stat = "count", fill = "lightyellow", color = "black") +
+  labs(title = "Count of Open Days per Week",
+       x = "Number of Days opened per Week",
+       y = "Count") +
+  scale_x_continuous(breaks = 1:7, labels = as.character(1:7)) +
+  theme_minimal()
+
+```
+
+In @fig-open-days-per-week we see that most of the restaurants are open during the seven days of the week. That is followed by six and five days per week. That makes sense since restaurants should generally be open for five days or more in order to make profit. 
+
+However, there are some restaurants that are open for 4 days or less, which is atypical to see. The impact of this low openings amount would be explored in the multivariate section. 
+
+### For Country
+
+```{r}
+#| label: fig-country-plot
+#| fig-cap: Restaurant Locations among different European countries
+ggplot(data, aes(x = country)) +
+  geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Restaurant Locations",
+       x = "Country",
+       y = "Count") 
+```
+
+@fig-country-plot displays the number of restaurants per country. France has the highest number of restaurants in this dataset, which could potentially explain why the top 10 restaurants chain are French. Croatia and Finland are the countries with the least number of restaurants on TripAdvisor.
+France will be explore deeper in a later section. 
+
+### For Average Price
+
+```{r}
+#| label: fig-avg-price
+#| fig-cap: Histogram-Distribution of Average Price
+ggplot(data, aes(x = avg_price)) +
+  geom_histogram(bins = 50, fill = "lightyellow", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Average Price",
+       x = "Average Price",
+       y = "Frequency") 
+```
+
+<brp>
+
+```{r}
+#| label: fig-avg-price-2
+#| fig-cap: Box Plot-Distribution of Average Price
+ggplot(data, aes(x = 1, y = avg_price)) +
+  geom_boxplot(fill = "lightyellow", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Average Price",
+       x = "",
+       y = "Average Price") +
+  theme_minimal()
+```
+
+@fig-avg-price shows a histogram is right-skewed, with a mode around 20 to 30 euros. This could indicate that the majority of European restaurants that appear on TripAdvisor are affordable and generally do not exceed 50 euros. However, there are a some exceptions, which are seen through the outlines in @fig-avg-price-2 with prices ranging from 100 euros to 500 euros. 
+
+### For Price Level
+
+```{r}
+#| label: fig-price-level
+#| fig-cap: Distribution of Price Levels
+ggplot(data, aes(x = price_level)) +
+  geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Price Levels",
+       x = "Price Level",
+       y = "Count")
+```
+
+It is evident in @fig-price-level that most of the restaurants are mid-range, aligning with what was observed in the average price plot above. This reinforces the idea that the food offered in the majority of the restaurants in this dataset is affordable and potentially budget-friendly.
+
+### For special Diets
+
+```{r}
+#| label: fig-special-diets
+#| fig-cap: Distribution of Special Diets
+ggplot(data, aes(x = special_diets)) +
+  geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Special Diets",
+       x = "Special Diets",
+       y = "Count")
+```
+
+@fig-special-diets shows that most of the restaurants on TripAdvisor do not offer special diets in their menus. However, there is some presence of vegetarian options. There is also a possibility that, for some restaurants, it was unknown, so it was registered as if they do not offer special diets. Thus, the impact of special diets can be inaccurate, not meaningful for this EDA.
+
+### For Cuisines
+
+```{r}
+#| label: Rearraging NA values
+# Replace NA and empty strings with "Unknown" before separating rows
+data$cuisines <- ifelse(is.na(data$cuisines) | data$cuisines == "" | tolower(data$cuisines) == "na", "Unknown", data$cuisines)
+
+# Split the cuisines variable into multiple rows and filter out "Unknown" values
+split_cuisines <- data %>%
+  separate_rows(cuisines, sep = ", ") %>%
+  filter(cuisines != "Unknown") %>%
+  mutate(cuisines = trimws(cuisines))
+```
+
+```{r}
+#| label: fig-cuisines
+#| fig-cap: Distribution of Special Diets
+# Plotting (assuming a simple bar plot)
+ggplot(split_cuisines, aes(x = cuisines)) +
+   geom_bar(fill = "lightyellow", color = "black") +
+  labs(title = "Cuisines Plot", x = "Cuisine", y = "Count")
+```
+
+In @cuisines it is seen that most of the restaurants, more than 10000 restaurants, offer a European cuisine. This make sense, since the restaurants I am exploring are located in different European cities.
+
+There is a moderate presence of restaurants, around 1875 ones, that work as bars too. Asian cuisine is also offered by around 1250 restaurants. African and North American cuisines have a lower presence in the menus of the European restaurants. Fusion and South American cuisine are barely offer in those restaurants. Oceania cuisine has the lowest presence in the restaurants within these database. 
+
+## Multivariate Analysis
+
+### Location of the restaurants
+```{r}
+#| label: fig-restaurants-location
+#| fig-cap: Cities Interactive Scatter Plot
+# Latitude vs longitude
+visualization_data <- na.omit(data)
+plot_ly(visualization_data, x = ~longitude, y = ~latitude, text = ~city, type = 'scatter', mode = 'markers') %>%
+  layout(title = "Cities Interactive Scatter Plot", xaxis = list(title = "Longitude"), yaxis = list(title = "Latitude"))
+```
+
+Through @fig-restaurants-location, it is appreciated that most restaurants are located in France. This reinforces the univariate analysis that indicated France having the highest amount of restaurants in the dataset. 
+
+### Food Top and Bottom Ratings
+
+Since there are a lot observations, the plot will be complicated to read. Thus, to make the analysis more comprehensive, I decided to narrow the observations studied. Since most of the restaurants offer a cuisine in Europe, I decided to explore those restaurants to make the EDA more meaningful. 
+
+This filtered dataset will be used to explore the food, service and value ratings in this section.
+
+```{r}
+#| label: Narrow Europe Cuisine
+european_cuisine <- filter(data, cuisines == "Europe")
+```
+
+```{r}
+#| label: Top Food Ratings
+top_food_ratings <- european_cuisine |>
+  arrange(desc(food_rating)) |>
+  head(10)  
+```
+
+```{r}
+#| label: fig-food-top-ratings
+#| fig-cap: Top 10 European Restaurants based on Food Rating
+ggplot(top_food_ratings, aes(x = restaurant_name, y = food_rating)) +
+  geom_bar(stat = "identity", color = "black", fill = "lightgreen") +
+  ggtitle("Top 10 European Restaurants based on Food Rating") +
+  xlab("Restaurant") +
+  ylab("Food Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
+
+In @fig-food-top-ratings it is seen that the top 20 restaurants posses a a food rating of 5 out of 5. This means that the quality of the European cuisine is not only affordable, which was drawn from out previous section analysis, but also really tasteful. 
+
+Another interesting finding is that these restaurants with the top food ratings are French, which links with the overall trend of the high performance and presence of restaurants in France. 
+
+```{r}
+#| label: Lowest ratings
+bottom_food_ratings <- european_cuisine |>
+  arrange(food_rating) |>
+  head(10)
+```
+
+```{r}
+#| label: fig-lowest-ratings
+#| fig-cap: Bottom 10 European Restaurants based on Food Rating
+
+ggplot(bottom_food_ratings, aes(x = restaurant_name, y = food_rating, fill = paste(restaurant_name, city))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  ggtitle("Bottom 10 European Restaurants based on Food Rating") +
+  xlab("Restaurant") +
+  ylab("Food Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+In @fig-lowest-ratings, it is appreciated that the most of the restaurants at the bottom, posses a low food rate of 2.0. There is a slightly higher food rate of 2.5 from a restaurant from the Flunch chain. The lowest food rate is 1.5 from Don & Donna. 
+
+```{r}
+#| label: fig-bottom-food-rankings
+#| fig-cap: Table of the Bottom 10 European estaurants based on Food Rating
+
+bottom_food_ratings |>
+  filter(restaurant_name %in% c("Flunch", "Don & Donna")) |>
+  select(restaurant_name, country, food_rating, avg_price, price_level) |>
+  datatable()
+```
+
+From @fig-bottom-food-rankings, it is interesting to see that the Don & Donna restaurant located in Greece, despite a low food rating, their price level is still mark as expensive. While, the French restaurant chain like Flunch, with food rating between 2.5 and 5, their price level is usually cheap, with a price around 15 euros.
+
+### Service Top and Bottom Ratings
+
+```{r}
+#| label: Top service rating
+top_service_rating <- european_cuisine |>
+  arrange(desc(service_rating)) |>
+  head(10)  
+```
+
+```{r}
+#| label: fig-plot-top-service
+#| fig-cap: Top 10 European Restaurants based on Service Rating
+ggplot(top_service_rating, aes(x = restaurant_name, y = service_rating)) +
+  geom_bar(stat = "identity", color = "black", fill = "lightgreen") +
+  ggtitle("Top 10 European Restaurants based on Service Rating") +
+  xlab("Restaurant") +
+  ylab("Service Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+@fig-plot-top-service shows that the restaurants that has the highest service rating 5 out of 5 are French. 
+
+```{r}
+#| label: Bottom service rating
+bottom_service_rating <- european_cuisine |>
+  arrange(service_rating) |>
+  head(10)
+```
+
+```{r}
+#| label: fig-plot-bottom-service
+#| fig-cap: Bottom 10 European Restaurants based on Service Rating
+
+ggplot(bottom_service_rating, aes(x = reorder(restaurant_name, -service_rating), y = service_rating)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black", fill = "lightgreen") +
+  ggtitle("Bottom 10 European Restaurants based on Service Rating") +
+  xlab("Restaurant") +
+  ylab("Service Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+@fig-plot-bottom-service shows the restaurants with the lowest service rating. The most common lowest rating is 2.5, followed by 2.0. The lowest service rating belongs to Don & Donna, which also has the lowest food rating as seen previously. 
+
+The Flunch chain restaurant appears again, meaning that they do not only have the a low food rating, but also a low service rating. 
+
+### Value Top and Bottom Ratings
+
+```{r}
+#| label: Top value Rating
+top_value_rating <- european_cuisine |>
+  arrange(desc(value_rating)) |>
+  head(10)  
+```
+
+```{r}
+#| label: fig-plot-top-value
+#| fig-cap: Top 10 European Restaurants based on Value Rating
+ggplot(top_value_rating, aes(x = restaurant_name, y = value_rating)) +
+  geom_bar(stat = "identity", color = "black", fill = "lightgreen") +
+  ggtitle("Top 10 European Restaurants based on Value Rating") +
+  xlab("Restaurant") +
+  ylab("Value Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+@fig-plot-top-value shows that the restaurants that has the highest value rating, 5 out of 5, are French.
+
+```{r}
+#| label: Bottom value Rating
+bottom_value_rating <- european_cuisine |>
+  arrange(value_rating) |>
+  head(10)
+```
+
+```{r}
+#| label: fig-plot-bottom-value
+#| fig-cap: Bottom 10 European Restaurants based on Value Rating
+ggplot(bottom_value_rating, aes(x = reorder(restaurant_name, -value_rating), y = value_rating)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black", fill = "lightgreen") +
+  ggtitle("Bottom 10 European Restaurants based on Value Rating") +
+  xlab("Restaurant") +
+  ylab("Value Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+@fig-plot-bottom-value shows that the restaurants with the lowest value rating is mostly 2. Something particular from this plot is that the Don & Donna restaurant appears again at the bottom. 
+
+### Price and Rating Relation
+
+```{r}
+#| label: fig-price-avg-rating
+#| fig-cap: Price vs Average Rating
+ggplot(european_cuisine, aes(x = avg_price, y = avg_rating)) +
+  geom_point() +
+  labs(title = "Price vs Average Rating",
+       x = "Price",
+       y = "Average Rating") +
+  theme_minimal()
+```
+
+In @fig-price-avg-rating, it is evident the relationship between the average rating and price are not directly proportional. This is because not because the restaurant is expensive, it has a high rating. For example, a restaurants with menu within the  price range of 390 euros have a rating of 4.5, while another restaurant with a menu around 50 euros have a higher rating of 5. Thus, it is inferred that other factors, such as experience, quality and not only the price matter to the consumers when rating restaurants. 
+
+```{r}
+#| label: most-exp-restaurants
+most_expensive <- european_cuisine %>%
+  arrange(desc(avg_price)) %>%
+  head(5)
+```
+
+```{r}
+#| label: fig-exp-restaurants
+#| fig-cap: Most Expensive Restaurants
+ggplot(most_expensive, aes(x = reorder(restaurant_name, -avg_price), y = avg_price, fill = avg_rating)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.7) +
+  labs(title = "Most Expensive Restaurants",
+       x = "Restaurant",
+       y = "Price",
+       fill = "Average Rating") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+This logic is also reinforced when looking at the most expensive restaurants in @fig-exp-restaurants. Particularly, checking the Brasserie Og Restaurant NO76, a Denmark restaurant, is the most expensive restaurant in this dataset, yet has an average rating of 4.5. The average rating does not reflect a poor image of the restaurant, but it could contribute to why the restaurants is more expensive than others. 
+
+Nevertheless, when checking Au Bon Accueil, a French restaurant with an average rating of below 3.75 and average price around 275 euros. It is questionable how a restaurant can charge such a substantial price in the presence of a less than meritorious rating.
+
+Hence, it can be concluded that while price exerts influence on the restaurant's average rating, and viceversa, there exist additional factors—namely, the ambience, food quality, and service—that significantly shape the overall experience for each patron, thereby influencing the performance of the restaurant at large.
+
+# Exploring particular restaurants 
+
+## Don & Donna 
+
+As explored before, Don & Donna restaurant has appeared at the bottom in the food, service and value rating:
+
+```{r}
+#| label: fig-don-donna
+#| fig-cap: Table of Don & Donna Restaurants Chain Information
+european_cuisine |>
+  filter(restaurant_name == "Don & Donna") |>
+  select(restaurant_name, food_rating, service_rating, value_rating, avg_price, price_level) |>
+  kable()
+```
+
+Thus, from @fig-don-donna it is possible to infer that the restaurant, Don & Donna is the worst one in this dataset base on the food, service and value rating. Still, it is interesting to see that even though their rating is bad, their prices are still expensive around 50 euros. This lead to think that maybe Greek restaurants are usually expensive regardless of their rating. 
+
+## The Flunch
+
+The Flush, the French chain, has appeared with the highest amount of restaurants, yet it posses the lowest food and service rating as seen previously in the EDA.
+
+```{r}
+#| label: fig-table-flunch
+#| fig-cap: Table of The Flunch Restaurants Chain Information
+european_cuisine |>
+  filter(restaurant_name == "Flunch") |>
+  select(restaurant_name, city, food_rating, service_rating, value_rating, avg_rating, avg_price, price_level) |>
+  arrange(desc(food_rating), desc(service_rating), desc(value_rating)) |>
+  datatable()
+```
+<brp>
+<brp>
+```{r}
+#| label: fig-table-french-rest
+#| fig-cap: Table of French Restaurants with the lowest food, service and value rating
+european_cuisine |>
+  filter(country == "France") |>
+  select(restaurant_name, food_rating, service_rating, value_rating, avg_rating, avg_price, price_level) |>
+  arrange(food_rating, service_rating, value_rating) |>
+  datatable()
+```
+
+Comparing @fig-table-flunch and @fig-table-french-rest, it is clear that the Flunch chain restaurant is not the worst restaurant in France, since that title goes to Les Chandelles and La Confiance. 
+
+Nevertheless, considering other French restaurants around the same price average an price level:
+
+```{r}
+#| label: fig-table-price-french-rest
+#| fig-cap: Table of French Restaurants with an average price similar to The Flunch
+european_cuisine |>
+  filter(country == "France" & avg_price < 16) |>
+  arrange(desc(avg_price), desc(food_rating), desc(service_rating), desc(value_rating)) |>
+  select(restaurant_name, food_rating, service_rating, value_rating, avg_rating, avg_price, price_level) |>
+  slice_head(n = 15) |>
+  datatable()
+```
+
+In @fig-table-price-french-rest, it is showed that costumers can find places where they get good food without spending more, and still get great service. Restaurants like La Table de Charbon-Blanc and Restaurant Plus Belle La Vie prove that French restaurants can be easy on the wallet while giving you a great experience. 
+
+# Exploring France a bit deeper
+
+Along this EDA, France had a strong presence since most of the restaurants are located there. Also, when looking at prices and ratings the top and bottom restaurants, French restaurants appeared. Thus, I decided to particularly explore at restaurants located in France. 
+
+## Price level and Ratings
+```{r}
+#| label: fig-price-level-ratings
+#| fig-cap: Distribution of French Restaurants by Price Level
+french_restaurants <- data |>
+  filter(country == "France")
+
+ggplot(french_restaurants, aes(x = price_level)) +
+  geom_bar(color = "black", fill = "orange") +
+  labs(title = "Distribution of French Restaurants by Price Level",
+       x = "Price Level",
+       y = "Number of Restaurants") 
+```
+
+<brp>
+<brp>
+
+```{r}
+#| label: fig-price-level-top-ratings
+#| fig-cap: Table of French Restaurants with the highest average rating and their price level
+top_rated_restaurants <- french_restaurants[french_restaurants$avg_rating == max(french_restaurants$avg_rating), ]
+
+top_rated_restaurants |>
+  select("restaurant_name", "avg_rating", "price_level") |>
+  datatable()
+```
+Through @fig-price-level-ratings, it is evident that the majority of French restaurants fall into the mid-range category. This suggests that French restaurants offer a variety of services and cuisines that are affordable for consumers. Moreover, their service remains excellent, as indicated in @fig-price-level-top-ratings, which shows that some top-rated restaurants with an average rating of 5 also belong to the mid-range category.
+
+Additionally, @fig-price-level-ratings suggests that French restaurants cater to diverse customer budgets. There are upscale, expensive restaurants for special occasions, as well as mid-range and affordable options for casual or informal gatherings. Regardless of the price level customers are seeking, they can still find restaurants with great food, value, and service, as illustrated in @fig-price-level-top-ratings, listing restaurants from cheap to expensive, all with an average rating of 5.
+
+## How many French restaurants have an award?
+
+```{r}
+#| label: French Restaurants Award
+french_restaurants <- french_restaurants %>%
+  mutate(awards_indicator = ifelse(!is.na(awards) & awards != "none", "yes", "no"))
+
+awards_count <- table(french_restaurants$awards_indicator)
+
+# Calculate percentages
+awards_percentage <- prop.table(awards_count) * 100
+
+# Create a data frame for ggplot
+awards_data <- data.frame(category = names(awards_percentage), percentage = as.numeric(awards_percentage))
+```
+
+```{r}
+#| label: fig-french-rest-awards
+#| fig-cap: Distribution of French Restaurants with Awards
+ggplot(awards_data, aes(x = "", y = percentage, fill = category)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y") +
+  labs(title = "Distribution of French Restaurants with Awards") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  scale_fill_manual(values = c("yes" = "darkblue", "no" = "lightblue")) +  # Customize fill colors as needed
+  geom_text(aes(label = sprintf("%.1f%%", percentage)), position = position_stack(vjust = 0.5), size = 4)
+```
+
+In @fig-french-rest-awards, it is evident that the majority of French restaurants have received awards. This underscores the excellent culinary service that French restaurants offer. These accolades not only enhance their reputation but also contribute to the higher costs associated with some French restaurants. Winning awards can impact not only the customer experience but also the pricing of their menus.
+
+# Conclusion
+
+In conclusion, the comprehensive analysis of the European dining landscape revealed several noteworthy insights. One of the most striking findings was France's culinary dominance, evident in the sheer number and top rankings of its restaurants. The unexpected concentration of restaurants in France prompted further exploration into the intricate dynamics of the culinary scene on the continent.
+
+Another finding is a widespread perception of excellence in food and service across the continent reflected in the high average ratings of European restaurants on TripAdvisor. Indeed, the top-rated European restaurants, in terms of food, are predominantly located in France.
+
+Interestingly, exploring restaurant chains like The Flunch challenged the assumption that more locations correlate with higher ratings. This idea suggests that success in the restaurant industry goes beyond mere quantity, which was expected since, as a consumer, price, and food quality are important factors but not the only ones to consider when assessing my dining experience at a restaurant. 
+
+The interplay between price and ratings added another layer of complexity to consumer preferences. Contrary to the assumed proportional relationship, some expensive restaurants exhibited lower ratings than their more affordable counterparts. The case study of Don & Donna exemplified this phenomenon, emphasizing the idea that perceived value extends beyond the monetary aspect and that customers consider various factors in their assessments.
+
+I was surprised by the diversity in French restaurants' price levels, spanning from budget-friendly to upscale, all with consistently high or above-average ratings. Besides, as expected, I found that most French restaurants had won an award because of their strong presence and high food ratings. Hence, France stands out as a culinary powerhouse.
+
+Future research could explore the impact of low open days per week on restaurant performance and delve into the correlation between specific cuisines and higher ratings. Additionally, it would be intriguing to analyze whether award-winning restaurants experience higher customer traffic, profitability, or industry recognition. These investigations could provide valuable insights and a better understanding of the European restaurant industry. 
