@@ -77,7 +77,7 @@ In the process of cleaning the data, various essential string manipulation, func
 
 * Data Filtering and Handling Missing Values
 
-This dataset now contains 11,784 observations and 31 variables. Among these variables, 12 are categorical, 1 is a list and 18 are numericals.
+This dataset now contains 11,784 observations and 31 variables. Among these variables, 12 are categorical, 1 is a list and 18 are numeric.
 
 # Starting of EDA 
 
