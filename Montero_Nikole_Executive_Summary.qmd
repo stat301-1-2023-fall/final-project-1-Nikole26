@@ -48,7 +48,7 @@ data <- read_rds("data/data_cleaned.rds")
 
 # Introduction
 
-Through an Exploratory Data Analysis (EDA) of a dataset regarding restaurants in different European countries on TripAdvisor, the main insights, findings and future recommendation for research are provided in this report. 
+Through the conducted Exploratory Data Analysis (EDA) of a dataset focusing on restaurants across various European countries, sourced from TripAdvisor, this report presents key insights, findings, and future research recommendations.
 
 # Main Insights and Findings
 
@@ -58,37 +58,30 @@ Through an Exploratory Data Analysis (EDA) of a dataset regarding restaurants in
 
 * The data underwent intricate string manipulation, numeric extraction, the implementation of functions and other tools to clean and enhance its structure, ensuring optimal readiness for the EDA.
 
-## Widespread Excellence in Food and Service
+## Widespread Excellence in Food and Service and Price Levels
 
 * European restaurants consistently achieve high ratings on platforms like TripAdvisor, emphasizing a widespread perception of excellence in food and service.
 
 * The majority of top-rated European restaurants, particularly in terms of food quality, are predominantly located in France.
 
-## Culinary Dominance of France
-* France's remarkable culinary dominance, evident in both the quantity and top rankings of its restaurants, serves as a central theme.
-
-* Surprising diversity in French restaurants' price levels, spanning from budget-friendly to upscale, with consistent high and above-average ratings.
+* Most restaurants fell into the mid-range category, aligning with the observations from the average price distribution. This suggests that the majority of restaurants in the dataset offer budget-friendly options.
 
 <brp>
 
 ```{r}
-#| label: fig-price-level-ratings
-#| fig-cap: Distribution of French Restaurants by Price Level
-french_restaurants <- data |>
-  filter(country == "France")
-
-ggplot(french_restaurants, aes(x = price_level)) +
-  geom_bar(color = "black", fill = "orange") +
-  labs(title = "Distribution of French Restaurants by Price Level",
+#| label: fig-price-level
+#| fig-cap: Distribution of Price Levels
+ggplot(data, aes(x = price_level)) +
+  geom_bar(fill = "lightyellow", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Price Levels",
        x = "Price Level",
-       y = "Number of Restaurants") 
+       y = "Count")
 ```
 
-## Redefining Success Metrics
+## Culinary Dominance of France
+* France's remarkable culinary dominance, evident in both the quantity and top rankings of its restaurants, serves as a central theme.
 
-* Exploration of restaurant chains, exemplified by The Flunch, challenges assumptions about the correlation between the number of locations and higher ratings.
-
-* Studying Don & Donna restaurant exemplifies how perceived value extends beyond the monetary aspect, highlighting various factors considered by customers.
+* Surprising diversity in French restaurants' price levels, spanning from budget-friendly to upscale, with consistent high and above-average ratings.
 
 * The majority of French restaurants had won an award, which contributed to their prestige and strong presence among other European restaurants.
 
@@ -123,6 +116,12 @@ ggplot(awards_data, aes(x = "", y = percentage, fill = category)) +
   scale_fill_manual(values = c("yes" = "darkblue", "no" = "lightblue")) +  # Customize fill colors as needed
   geom_text(aes(label = sprintf("%.1f%%", percentage)), position = position_stack(vjust = 0.5), size = 4)
 ```
+
+## Redefining Success Metrics
+
+* Exploration of restaurant chains, exemplified by The Flunch, challenges assumptions about the correlation between the number of locations and higher ratings.
+
+* Studying Don & Donna restaurant exemplifies how perceived value extends beyond the monetary aspect, highlighting various factors considered by customers.
 
 # Opportunity for future research
 
