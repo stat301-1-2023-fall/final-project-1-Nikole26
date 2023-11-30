@@ -121,6 +121,10 @@ data_final <- data_final |>
          value_rating = value,
          service_rating = service)
 
+data_final_rds
+
+write_rds(data_final, "~/stat301-1/projects/final-project-1-Nikole26/data/data_final.rds")
+
 # Digging deeper France--------------------
 ## Price level Frequency for Top French Restaurants
 french_restaurants <- data_final |>
