@@ -59,7 +59,7 @@ The dataset contains a pool of 1,083,397 restaurants across European countries. 
 
 The primary concern for this data analysis revolves around the existence of missing values in different variables. This issue has the potential to compromise the accuracy of the results, resulting in misleading interpretations. To address this, the data will undergo an intensive cleaning process to ensure that the Exploratory Data Analysis (EDA) yields meaningful insights.
 
-# Cleaning the data
+# Data Cleaning Process
 
 In the process of cleaning the data, various essential string manipulation, functions and transformation techniques were employed using the dplyr and stringr packages in R. The dataset underwent a series of refinements to enhance its tidiness and facilitate downstream analyses. Key steps in the cleaning process include:
 
